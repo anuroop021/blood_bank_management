@@ -4,7 +4,7 @@ const donorController = require('../controllers/donorController');
 const auth = require('../middleware/auth'); 
 
 
-router.post('/register', auth.isLogout, donorController.registerDonor);  
+router.post('/register', auth.isLogout,donorController.upload.single('idDocument'), donorController.registerDonor);  
 router.post('/login', auth.isLogout, donorController.loginDonor);  
 router.post('/logout', auth.isLogin, donorController.logoutDonor); 
 

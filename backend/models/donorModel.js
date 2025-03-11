@@ -100,10 +100,7 @@ const DonorSchema = new mongoose.Schema({
       message: props => props.reason.message
     }
   },
-  doctor: {
-    type: String,
-    default: ""
-  },
+  idDocument: String,
 });
 
 

@@ -21,6 +21,7 @@ class DonorRegDetails extends Component {
       address: "",
       idType: "",
       idNumber: "",
+      idDocument: null,
       errorMessage: "",
       successMessage: "",
       isRegistered: false,
@@ -32,6 +33,10 @@ class DonorRegDetails extends Component {
     console.log(`Field ${e.target.name} updated: ${e.target.value}`);
   };
 
+  handleFileChange = (e) => {
+    this.setState({ idDocument: e.target.files[0] });
+  };
+
   handleIdTypeChange = (e) => {
     this.setState({ idType: e.target.value });
     console.log(`ID Type selected: ${e.target.value}`);
@@ -39,32 +44,36 @@ class DonorRegDetails extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber } = this.state;
-
-    if (!fname || !lname || !email || !gender || !age || !phone || !bloodGroup || !address || !idType || !idNumber) {
+    const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber, idDocument } = this.state;
+  
+    if (!fname || !lname || !email || !gender || !age || !phone || !bloodGroup || !address || !idType || !idNumber || !idDocument) {
       console.log("Some fields are missing!");
       this.setState({ errorMessage: "Please fill out all fields." });
       return;
     }
-
+  
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("fname", fname);
+    formData.append("lname", lname);
+    formData.append("email", email);
+    formData.append("gender", gender);
+    formData.append("age", age);
+    formData.append("phone", phone);
+    formData.append("bloodGroup", bloodGroup);
+    formData.append("address", address);
+    formData.append("idType", idType);
+    formData.append("idNumber", idNumber);
+    formData.append("idDocument", idDocument); // Append the file
+  
     try {
-      const response = await axios.post("http://localhost:5000/api/donor/register", {
-        username,
-        password,
-        fname,
-        lname,
-        email,
-        gender,
-        age,
-        phone,
-        bloodGroup,
-        address,
-        idType,
-        idNumber,
+      const response = await axios.post("http://localhost:5000/api/donor/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // Important!
       });
-    
+  
       console.log("Registration successful:", response.data);
-    
+  
       this.setState({
         successMessage: "Registration completed successfully!",
         errorMessage: "",
@@ -77,8 +86,8 @@ class DonorRegDetails extends Component {
         successMessage: "",
       });
     }
-    
   };
+  
 
   render() {
     const { fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber, errorMessage, successMessage, isRegistered } = this.state;
@@ -229,6 +238,7 @@ class DonorRegDetails extends Component {
           </div>
 
           {idType && (
+            <>
             <div className="donor-reg-details-group">
               <label htmlFor="donor-id-number">Government ID number:</label>
               <input
@@ -240,6 +250,10 @@ class DonorRegDetails extends Component {
                 required
               />
             </div>
+            <div className="donor-reg-details-group">
+                <label htmlFor="donor-id-document">Upload ID Document:</label>
+                <input type="file" id="donor-id-document" name="idDocument" onChange={this.handleFileChange} required />
+              </div></>
           )}
 
           <input className="donor-reg-details-submit" type="submit" value="Submit" />
