@@ -5,6 +5,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const donorRoute = require('./routes/donorRoute'); 
 const session = require('express-session');
+const morgan = require('morgan');
+const csurf = require('csurf');
+const helmet = require('helmet');
+
 mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
   .then(() => {
     console.log('MongoDB connected successfully');
@@ -14,6 +18,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
   });
 
 const app = express();
+
+app.use(helmet());
+app.use(morgan('dev'));
+
 app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true
@@ -32,6 +40,28 @@ app.use(session({
     sameSite: 'strict', 
   }
 }));
+
+const csrfProtection = csurf({ cookie: true });
+
+app.use((req, res, next) => {
+  if (req.cookies && req.cookies.sessionID) {
+    csrfProtection(req, res, next);
+  } else {
+    next();
+  }
+});
+
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ message: 'Invalid CSRF token' });
+  }
+  next(err);
+});
+
 
 //Models
 const Employee = require('./models/employeeModel'); 
@@ -542,6 +572,22 @@ app.post('/AddMedic', async (req, res) => {
 });
 
 //--------------------------------------------------------------------------------------------------------------
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Route Not Found" });
+});
+
+app.use((err, req, res, next) => {
+  if (err.name === 'ValidationError') {
+    const errors = Object.values(err.errors).map(e => e.message);
+    return res.status(400).json({ message: 'Validation Error', errors });
+  }
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
 
 app.listen(5000, () => {
   console.log('Server running on port 5000');
