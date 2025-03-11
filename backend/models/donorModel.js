@@ -154,6 +154,10 @@ const ScheduleSchema = new mongoose.Schema({
   doctor: {
     type: String,
     default: ""
+  },
+  is_verified_by_mp: {
+    type: Number,
+    default: 0
   }
 });
 const DonorModel = mongoose.model("Donor", DonorSchema);

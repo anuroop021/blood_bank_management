@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+
 import { Navigate } from 'react-router-dom';
 import '../../styles/donorStyles/Donor.css';
 
@@ -59,6 +60,13 @@ class Dashboard extends Component {
             <p>Blood Group: {donorDetails.bloodGroup}</p>
             <p>Address: {donorDetails.address}</p>
             <button onClick={this.handleLogout} className="logout-button">Logout</button>
+
+            {/* View Donation History Link/Button */}
+            <div className="donation-history">
+              <a href="/donor/DonorHistory" className="view-donation-history-link">
+                View Donation History
+              </a>
+            </div>
           </div>
         ) : (
           <p>Loading your details...</p>

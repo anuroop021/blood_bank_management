@@ -207,3 +207,26 @@ exports.scheduleAppointment = async (req, res) => {
     return res.status(500).json({ message: "Error scheduling appointment" });
   }
 };
+
+exports.getDonationHistory = async (req, res) => {
+  try {
+    if (!req.session.donor) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const schedules = await ScheduleModel.find({
+      name: req.session.donor.username,
+      is_verified_by_mp: 1
+    }).sort({ date: -1 }); // Sort by date in descending order
+
+    if (!schedules.length) {
+      return res.status(200).json([]); // Return empty array if no verified donations
+    }
+
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.error("Error fetching donation history:", error);
+    return res.status(500).json({ message: "Error fetching donation history." });
+  }
+};
+

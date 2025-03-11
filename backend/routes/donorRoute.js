@@ -15,5 +15,6 @@ router.get('/available-slots', auth.isLogin, donorController.getAvailableTimeSlo
 
 router.post('/appointment', auth.isLogin, donorController.scheduleAppointment); 
 
-
+// Add this new route to donorRoute.js
+router.get('/donationHistory', auth.isLogin, donorController.getDonationHistory);
 module.exports = router;
