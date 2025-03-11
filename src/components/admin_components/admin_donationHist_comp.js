@@ -131,7 +131,7 @@ class AdminDonHist extends React.Component {
               <th>Name</th>
               <th>Blood Group</th>
               <th>Date</th>
-              <th>Time</th>
+              <th>Time Slot</th>
               <th>Address</th>
               <th>Doctor</th>
             </tr>
@@ -143,7 +143,7 @@ class AdminDonHist extends React.Component {
                 <td>{donation.name}</td>
                 <td>{donation.bloodGroup}</td>
                 <td>{new Date(donation.date).toLocaleDateString()}</td>
-                <td>{donation.time}</td>
+                <td>{donation.timeSlot}</td>
                 <td>{donation.address}</td>
                 <td>{donation.doctor || 'N/A'}</td>
               </tr>

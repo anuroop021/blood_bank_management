@@ -1,10 +1,10 @@
 const express = require('express');
-const Doctor = require('../../models/recipientportalmodel');
+const { ScheduleModel } = require('../../models/donorModel');
 const doctorpiechartrouter = express.Router();
 
 doctorpiechartrouter.get('/', async (req, res) => {
   try {
-    const counts = await Doctor.aggregate([
+    const counts = await ScheduleModel.aggregate([
       { $group: { _id: '$doctor', count: { $sum: 1 } } }
     ]);
     res.json(counts);

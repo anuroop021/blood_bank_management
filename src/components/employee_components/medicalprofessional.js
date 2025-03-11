@@ -37,44 +37,74 @@ class AssignedPatients extends Component {
     this.setState({ redirecttologin: true });
   };
 
+  handleVerify = async (id) => {
+    const confirm = window.confirm("Are you sure you want to verify this patient?");
+    if (!confirm) return;
+
+    try {
+      await axios.put(`http://localhost:5000/api/assigneddonors/verify/${id}`);
+
+      // Remove the verified patient from the list
+      this.setState((prevState) => ({
+        patients: prevState.patients.filter(patient => patient._id !== id)
+      }));
+
+      alert("Patient verified successfully!");
+    } catch (error) {
+      console.error('Error verifying patient:', error);
+      alert("Failed to verify patient");
+    }
+  };
+
   render() {
-    const { patients, errorMessage, redirecttologin} = this.state;
-    if(redirecttologin){
-        return <Navigate to="/medicalprofessional" />
+    const { patients, errorMessage, redirecttologin } = this.state;
+    if (redirecttologin) {
+      return <Navigate to="/medicalprofessional" />;
     }
 
     return (
-      <div id="assigned-patients-container">
-        <h2 id="assigned-patients-title">Assigned Patients</h2>
+      <div className="assigned-patients-container">
+        <h2 className="assigned-patients-title">Assigned Patients</h2>
 
-        {errorMessage && <p id="error-message">{errorMessage}</p>}
+        {errorMessage && <p className="assigned-patients-error">{errorMessage}</p>}
 
         {patients.length === 0 ? (
-          <p id="no-patients-message">No patients assigned to you.</p>
+          <p className="assigned-patients-no-data">No unverified patients assigned to you.</p>
         ) : (
-          <table id="patients-table">
+          <table className="assigned-patients-table">
             <thead>
-              <tr id="patients-table-header">
-                <th id="patient-name-header">Patient Name</th>
-                <th id="blood-group-header">Blood Group</th>
-                <th id="assigned-date-header">Assigned Date</th>
-                <th id="address-header">Address</th>
+              <tr>
+                <th>Patient Name</th>
+                <th>Blood Group</th>
+                <th>Assigned Date</th>
+                <th>Address</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {patients.map((patient) => (
-                <tr key={patient._id} id={`patient-row-${patient._id}`}>
-                  <td id={`patient-name-${patient._id}`}>{patient.name}</td>
-                  <td id={`blood-group-${patient._id}`}>{patient.bloodGroup}</td>
-                  <td id={`assigned-date-${patient._id}`}>{new Date(patient.date).toLocaleDateString()}</td>
-                  <td id={`address-${patient._id}`}>{patient.address}</td>
+                <tr key={patient._id}>
+                  <td>{patient.name}</td>
+                  <td>{patient.bloodGroup}</td>
+                  <td>{new Date(patient.date).toLocaleDateString()}</td>
+                  <td>{patient.address}</td>
+                  <td>
+                    <button
+                      className="verify-btn"
+                      onClick={() => this.handleVerify(patient._id)}
+                    >
+                      Verify
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
 
-        <button id="logout-action-button" onClick={this.handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={this.handleLogout}>
+          Logout
+        </button>
       </div>
     );
   }

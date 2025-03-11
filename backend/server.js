@@ -87,6 +87,7 @@ const assigndoctorroute = require('./routes/employeeRoutes/assigndoctorroute');
 const updatedoctorroute = require('./routes/employeeRoutes/updatedoctorroute');
 const medicalprofessionalloginroute = require('./routes/employeeRoutes/medicalprofessionalloginroute');
 const assigneddonorsroute = require('./routes/employeeRoutes/assigneddonorsroute');
+const doctorsroute = require('./routes/employeeRoutes/doctorsroute');
 
 app.get('/api', (req, res) => {
   res.send('Welcome to the Blood Bank Management API');
@@ -105,7 +106,7 @@ app.use('/api/assigndoctor', assigndoctorroute);
 app.use('/api/updatedoctor', updatedoctorroute);
 app.use('/api/medicalprofessional/login', medicalprofessionalloginroute);
 app.use('/api/assigneddonors',assigneddonorsroute);
-
+app.use('/api/doctors',doctorsroute);
 // Admin routes---------------------------------------------------------------------------------------------------
 
 app.get('/api/dondash', async (req, res) => {
@@ -148,7 +149,7 @@ app.get('/api/blood-group-counts', async (req, res) => {
 app.get('/api/counts', async (req, res) => {
   try {
     const donorsRegistered = await DonorModel.countDocuments();
-    const donationsDone = await DonorModel.aggregate([
+    const donationsDone = await ScheduleModel.aggregate([
       { $match: { is_verified_by_mp: 1 } }, 
       { $group: { _id: "$bloodGroup", count: { $sum: 1 } } } 
     ]);

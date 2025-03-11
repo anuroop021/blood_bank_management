@@ -5,20 +5,31 @@ import '../../styles/employee_styles/assign_doctor.css';
 const ScheduleTable = () => {
   const [data, setData] = useState([]);
   const [updatedDoctor, setUpdatedDoctor] = useState({});
-  const [successMessage, setSuccessMessage] = useState(''); 
+  const [doctorList, setDoctorList] = useState([]); // State for doctor names
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Fetch schedule data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/assigndoctor'); // Adjust the route if necessary
+        const response = await axios.get('http://localhost:5000/api/assigndoctor');
         setData(response.data);
       } catch (error) {
         console.error('Error fetching schedule data:', error);
       }
     };
 
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/doctors'); // Adjust route if necessary
+        setDoctorList(response.data.map((doctor) => doctor.username));
+      } catch (error) {
+        console.error('Error fetching doctor names:', error);
+      }
+    };
+
     fetchData();
+    fetchDoctors();
   }, []);
 
   const handleDoctorChange = (id, newDoctorValue) => {
@@ -64,7 +75,7 @@ const ScheduleTable = () => {
             <th id="name-column">Name</th>
             <th id="blood-group-column">Blood Group</th>
             <th id="date-column">Date</th>
-            <th id="time-column">Time</th>
+            <th id="time-column">Time Slot</th>
             <th id="address-column">Address</th>
             <th id="doctor-column">Doctor</th>
             <th id="action-column">Action</th>
@@ -76,19 +87,29 @@ const ScheduleTable = () => {
               <td id={`name-${item._id}`}>{item.name}</td>
               <td id={`blood-group-${item._id}`}>{item.bloodGroup}</td>
               <td id={`date-${item._id}`}>{new Date(item.date).toLocaleString()}</td>
-              <td id={`time-${item._id}`}>{item.time}</td>
+              <td id={`timeSlot-${item._id}`}>{item.timeSlot}</td>
               <td id={`address-${item._id}`}>{item.address}</td>
               <td id={`doctor-input-${item._id}`}>
-                <input
-                  type="text"
+                <select
                   value={updatedDoctor[item._id] || item.doctor}
                   onChange={(e) => handleDoctorChange(item._id, e.target.value)}
-                  placeholder="Enter doctor's name"
-                  id={`doctor-input-field-${item._id}`}
-                />
+                  id={`doctor-dropdown-${item._id}`}
+                >
+                  <option value="">Select Doctor</option>
+                  {doctorList.map((doctor) => (
+                    <option key={doctor} value={doctor}>
+                      {doctor}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td id={`save-button-${item._id}`}>
-                <button onClick={() => updateDoctor(item._id, updatedDoctor[item._id] || item.doctor)} id={`save-btn-${item._id}`}>Save</button>
+                <button 
+                  onClick={() => updateDoctor(item._id, updatedDoctor[item._id] || item.doctor)} 
+                  id={`save-btn-${item._id}`}
+                >
+                  Save
+                </button>
               </td>
             </tr>
           ))}
