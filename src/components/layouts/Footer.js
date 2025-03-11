@@ -1,55 +1,84 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Facebook, Twitter, Instagram, Linkedin, Heart, Mail, Phone, MapPin, Droplets } from 'lucide-react';
 import '../../styles/layout/Footer.css';
 
-class Footer extends Component {
-  render() {
-    return (
-      <footer className="footer-container">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h2>OUR LINKS</h2>
-            <ul className="footer-link-list">
-              <li><a href="/">Home</a></li>
-              {/* eslint-disable-next-line */}
-              <li><a href="#">RakthaDhaara</a></li>
-            </ul>
+const Footer = () => {
+  return (
+    <footer className="footer">
+      <div className="footer-content">
+        <div className="footer-section">
+          <div className="footer-brand">
+            <Droplets className="footer-logo-icon" />
+            <h2>BloodBank</h2>
           </div>
-          <div className="footer-section">
-            <h2>USEFUL LINKS</h2>
-            <ul className="footer-link-list">
-              <li><a href="/eligibility">How Blood Donation is Useful?</a></li>
-              <li><a href="/Faq">Why Blood Donation</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h2>About Our Website</h2>
-            <p className="footer-description">
-              Blood donation and transfusion service is an indispensable part of contemporary medicine and health care.
-              Blood management has been recognized as a challenging task because of the life-threatening nature of blood products.
-            </p>
-          </div>
-          <div className="footer-section" id="footer-icons">
-            <div className="footer-icons-container">
-              <a href="https://www.instagram.com"><i className="fab fa-instagram"></i></a>
-              <a href="https://www.linkedin.com"><i className="fab fa-linkedin"></i></a>
-              <a href="https://www.twitter.com"><i className="fab fa-twitter"></i></a>
-              <a href="https://www.facebook.com"><i className="fab fa-facebook"></i></a>
+          <p className="footer-description">
+            Blood donation and transfusion service is an indispensable part of contemporary medicine and healthcare.
+            Together, we can save lives and make a difference in our community.
+          </p>
+        </div>
+
+        <div className="footer-section">
+          <h3>Quick Links</h3>
+          <ul className="footer-links">
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/eligibility">Eligibility</Link></li>
+            <li><Link to="/donor/DonorRegistration">Donate Blood</Link></li>
+            <li><Link to="/Faq">FAQs</Link></li>
+          </ul>
+        </div>
+
+        <div className="footer-section">
+          <h3>Contact Us</h3>
+          <div className="contact-info">
+            <div className="contact-item">
+              <Mail className="contact-icon" />
+              <span>contact@bloodbank.org</span>
             </div>
-            <img src="/images/logo.png" alt="Description" className="footer-logo" />
+            <div className="contact-item">
+              <Phone className="contact-icon" />
+              <span>(555) 123-4567</span>
+            </div>
+            <div className="contact-item">
+              <MapPin className="contact-icon" />
+              <span>123 Medical Center Dr, City, State</span>
+            </div>
           </div>
         </div>
-        <div className="footer-scrolling-headlines">
-          <div className="footer-headline">
-            Disclaimer: Please be informed that any changes you make and data you enter on this platform are stored securely in our database.
+
+        <div className="footer-section">
+          <h3>Connect With Us</h3>
+          <div className="social-links">
+            <a href="https://facebook.com" className="social-link">
+              <Facebook />
+            </a>
+            <a href="https://twitter.com" className="social-link">
+              <Twitter />
+            </a>
+            <a href="https://instagram.com" className="social-link">
+              <Instagram />
+            </a>
+            <a href="https://linkedin.com" className="social-link">
+              <Linkedin />
+            </a>
           </div>
         </div>
-        <div className="footer-links">
-          <a href="/faq">FAQ</a>
-          
+      </div>
+
+      <div className="footer-bottom">
+        <div className="footer-disclaimer">
+          <p>
+            Disclaimer: All information and data entered on this platform are stored securely in our database.
+          </p>
         </div>
-      </footer>
-    );
-  }
-}
+        <div className="footer-copyright">
+          <p>
+            © 2024 BloodBank. Made with <Heart className="heart-icon" /> for humanity
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
 export default Footer;

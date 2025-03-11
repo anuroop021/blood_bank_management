@@ -1,80 +1,93 @@
-// src/components/Header.js
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Menu, X, ChevronDown, Sun, Moon, Droplets } from 'lucide-react';
 import '../../styles/layout/Header.css';
 
-class Header extends Component {
-  render() {
-    return (
-      <header className="bloodBank-header-container">
-        <div className="bloodBank-header-heading"></div>
-        <nav className="bloodBank-header-nav">
-          <div className="bloodBank-header-item" id="bloodBank-header-item0">
-            <Link to="/home">{/* eslint-disable-next-line*/}
-              <img src="/images/logo.png" alt="Clickable Image" className="bloodBank-header-logo" />
-            </Link>
-          </div>
-          <div className="bloodBank-header-item" id="bloodBank-header-item1">
-            <h3>Donate Blood</h3>
-            <div className="bloodBank-header-hover-text" id="bloodBank-header-text1">
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle('dark-mode');
+  };
+
+  return (
+    <header className={`header ${isDarkMode ? 'dark' : ''}`}>
+      <nav className="nav-container">
+        <div className="nav-logo">
+          <Link to="/home" className="logo-link">
+            <Droplets className="logo-icon" />
+            <span className="logo-text">Rakthadhaara</span>
+          </Link>
+        </div>
+
+        <button className="mobile-menu-btn" onClick={toggleMenu}>
+          {isMenuOpen ? <X /> : <Menu />}
+        </button>
+
+        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <div className="nav-item">
+            <span className="nav-link">
+              Donate Blood <ChevronDown className="dropdown-icon" />
+            </span>
+            <div className="dropdown-menu">
               <Link to="/donor/DonorProfile">My Profile</Link>
-              <br /><br />
-              <Link to="/donor/Appointment">Schedule my Appointment</Link>
-              <br /><br />
-              <Link to="/donor/DonorProfileManage">Manage My Profile</Link>
-              <br /><br />
-               <Link to="/donor/DonorHistory" >Donation History</Link>
-               <br /><br />
-               <Link to="/donor/receiveBlood">Receive Blood</Link>
-               <br/><br/>
+              <Link to="/donor/Appointment">Schedule Appointment</Link>
+              <Link to="/donor/DonorProfileManage">Manage Profile</Link>
+              <Link to="/donor/receiveBlood">Request Blood</Link>
             </div>
           </div>
-          <div className="bloodBank-header-item" id="bloodBank-header-item2">
-            <h3>Donor Registration</h3>
-            <div className="bloodBank-header-hover-text" id="bloodBank-header-text2">
+
+          <div className="nav-item">
+            <span className="nav-link">
+              Registration <ChevronDown className="dropdown-icon" />
+            </span>
+            <div className="dropdown-menu">
               <Link to="/donor/DonorRegistration">Donor Registration</Link>
-              <br /><br />
               <Link to="/donor/DonorLogin">Donor Login</Link>
-              <br /><br />
             </div>
           </div>
-          <div className="bloodBank-header-item" id="bloodBank-header-item3">
-            <h3>How to Donate Blood</h3>
-            <div className="bloodBank-header-hover-text" id="bloodBank-header-text3">
-              <Link to="/eligibility" >
-                Eligibility Requirements
-              </Link>
-              <br /><br />
-              <Link to="/Faq">FAQ'S</Link>
-              <br /><br />
-              <Link to="/eligibility" >
-              </Link>
+
+          <div className="nav-item">
+            <span className="nav-link">
+              Resources <ChevronDown className="dropdown-icon" />
+            </span>
+            <div className="dropdown-menu">
+              <Link to="/eligibility">Eligibility Requirements</Link>
+              <Link to="/Faq">FAQ's</Link>
             </div>
           </div>
-          <div className="bloodBank-header-item" id="bloodBank-header-item4">
-            <h3>Employee</h3>
-            <div className="bloodBank-header-hover-text" id="bloodBank-header-text4">
+
+          <div className="nav-item">
+            <span className="nav-link">
+              Staff Portal <ChevronDown className="dropdown-icon" />
+            </span>
+            <div className="dropdown-menu">
               <Link to="/employeeLogin">Employee Login</Link>
-              <br /><br />
               <Link to="/adminLogin">Admin Login</Link>
-              <br /><br />
-              <Link to="/medicalprofessional">Medical Professional Login</Link>
-              <br /><br />
+              <Link to="/medicalprofessional">Medical Professional</Link>
             </div>
           </div>
-          <div className="bloodBank-header-item" id="bloodBank-header-item5">
-            <h3>Hospitals</h3>
-            <div className="bloodBank-header-hover-text" id="bloodBank-header-text5">
+
+          <div className="nav-item">
+            <span className="nav-link">
+              Hospitals <ChevronDown className="dropdown-icon" />
+            </span>
+            <div className="dropdown-menu">
               <Link to="/hospital/register">Hospital Registration</Link>
-              <br /><br />
               <Link to="/hospital">Hospital Login</Link>
-              <br /><br />
             </div>
           </div>
-        </nav>
-      </header>
-    );
-  }
-}
+        </div>
+
+        <button className="theme-toggle" onClick={toggleDarkMode}>
+          {isDarkMode ? <Sun className="theme-icon" /> : <Moon className="theme-icon" />}
+        </button>
+      </nav>
+    </header>
+  );
+};
 
 export default Header;
