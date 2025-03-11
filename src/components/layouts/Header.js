@@ -26,7 +26,7 @@ class Header extends Component {
                <Link to="/donor/DonorHistory" >Donation History</Link>
                <br /><br />
                <Link to="/donor/receiveBlood">Receive Blood</Link>
-               <br/><br/>
+               <br/>
             </div>
           </div>
           <div className="bloodBank-header-item" id="bloodBank-header-item2">
