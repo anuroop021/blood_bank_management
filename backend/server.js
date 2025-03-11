@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const donorRoute = require('./routes/donorRoute');  // Donor-related routes
+const donorRoute = require('./routes/donorRoute'); 
 const session = require('express-session');
 mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
   .then(() => {
@@ -123,12 +123,12 @@ app.get('/api/counts', async (req, res) => {
       { $group: { _id: "$bloodGroup", count: { $sum: 1 } } } 
     ]);
     const employeesRegistered = await Employee.countDocuments();
-    const bloodUnitsCollected = donationsDone.length; // Use the length of the donationsDone array
+    const bloodUnitsCollected = donationsDone.length; 
 
     res.json({ 
       donorsRegistered, 
       employeesRegistered, 
-      donationsDone: donationsDone.length, // You might want to pass the count directly
+      donationsDone: donationsDone.length, 
       bloodUnitsCollected 
     });
   } catch (error) {
@@ -290,7 +290,7 @@ app.put('/api/hospitals/update/:id', async (req, res) => {
       return res.status(404).json({ error: 'Hospital not found' });
     }
 
-    // Update only the fields that are provided in the request body
+
     if (username) hospital.username = username;
     if (address) hospital.address = address;
     if (contact) hospital.contact = contact;
@@ -400,15 +400,12 @@ app.post('/api/HospitalPayment', async (req, res) => {
 
 app.post('/api/payment', async (req, res) => {
   try {
-    // Assuming userId is stored in the cookie or from authentication
-    const userId = req.cookies.userId; // Or from session or JWT token
+    const userId = req.cookies.userId; 
 
     if (!userId) {
       return res.status(400).json({ message: 'User not authenticated' });
     }
 
-    // Determine if the logged-in user is a donor or hospital
-    // Fetch the user from either DonorModel or HospitalModel
     const donor = await DonorModel.findById(userId);
     const hospital = await HospitalModel.findById(userId);
 
@@ -416,7 +413,6 @@ app.post('/api/payment', async (req, res) => {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    // Prepare transaction details
     const { bloodType, bloodUnits, amount, transactionStatus } = req.body;
 
     const newTransaction = new PaymentTransaction({
@@ -424,8 +420,8 @@ app.post('/api/payment', async (req, res) => {
       bloodUnits,
       amount,
       transactionStatus,
-      donor: donor ? donor._id : null, // Assign donor ID if it's a donor
-      hospitalID: hospital ? hospital._id : null, // Assign hospital ID if it's a hospital
+      donor: donor ? donor._id : null, 
+      hospitalID: hospital ? hospital._id : null, 
     });
 
     await newTransaction.save();
@@ -464,8 +460,8 @@ app.get('/api/paymentTransactions', async (req, res) => {
   }
 
   try {
-    const transactions = await PaymentTransaction.find(filter); // Use PaymentTransaction here
-    console.log('Fetched transactions:', transactions); // Log the transactions to check if data is returned
+    const transactions = await PaymentTransaction.find(filter); 
+    console.log('Fetched transactions:', transactions); 
     res.json(transactions);
   } catch (error) {
     console.error('Error fetching transactions:', error);

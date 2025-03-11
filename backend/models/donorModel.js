@@ -100,10 +100,6 @@ const DonorSchema = new mongoose.Schema({
       message: props => props.reason.message
     }
   },
-  is_verified_by_mp: {
-    type: Number,
-    default: 0
-  },
   doctor: {
     type: String,
     default: ""
@@ -150,6 +146,10 @@ const ScheduleSchema = new mongoose.Schema({
   address: {
     type: String,
     required: true
+  },
+  is_verified_by_mp: {
+    type: Number,
+    default: 0
   },
   doctor: {
     type: String,
