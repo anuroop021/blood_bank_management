@@ -26,6 +26,8 @@ app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true
 }));
+
+//built in middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -41,6 +43,7 @@ app.use(session({
   }
 }));
 
+//third party middleware
 const csrfProtection = csurf({ cookie: true });
 
 app.use((req, res, next) => {
@@ -55,12 +58,7 @@ app.get('/api/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-app.use((err, req, res, next) => {
-  if (err.code === 'EBADCSRFTOKEN') {
-    return res.status(403).json({ message: 'Invalid CSRF token' });
-  }
-  next(err);
-});
+
 
 
 //Models
@@ -72,7 +70,7 @@ const HospPayment = require('./models/hospitalpayment')
 const PaymentTransaction = require('./models/paymentTransaction');
 const medicalProfessional = require('./models/medicalprofessionalmodel');
 
-//Routes
+//Router level middleware
 app.use('/api/donor', donorRoute);
 
 const employeeloginroute = require('./routes/employeeRoutes/employeeloginroute');
@@ -114,7 +112,7 @@ app.get('/api/dondash', async (req, res) => {
     const uniqueDonors = await DonorModel.distinct('email'); 
     const numberOfDonors = uniqueDonors.length;
     const numberOfEmployees = await Employee.countDocuments(); 
-    const totalBloodUnits = numberOfDonors; 
+    const totalBloodUnits = await ScheduleModel.countDocuments({ is_verified_by_mp: 1 }); 
 
     res.json({
       totalBloodUnits,
@@ -129,7 +127,7 @@ app.get('/api/dondash', async (req, res) => {
 });
 app.get('/api/blood-group-counts', async (req, res) => {
   try {
-    const bloodGroupCounts = await DonorModel.aggregate([
+    const bloodGroupCounts = await ScheduleModel.aggregate([
       {
         $match: { is_verified_by_mp: 1 }  
       },
@@ -579,6 +577,14 @@ app.post('/AddMedic', async (req, res) => {
 //--------------------------------------------------------------------------------------------------------------
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route Not Found" });
+});
+
+//error handling middleware
+app.use((err, req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ message: 'Invalid CSRF token' });
+  }
+  next(err);
 });
 
 app.use((err, req, res, next) => {

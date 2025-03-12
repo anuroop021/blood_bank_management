@@ -25,7 +25,7 @@ import Home from './pages/home/home_page';
 import Entry from './components/landingPage/Entry';
 import DonManage from './pages/Donor_Pages/ManageMyProfile_page';
 import DonSched from './pages/Donor_Pages/ScheduleMyAppointment_page';
-import DonationHistory from './components/donor/DonationHistory';
+import DonHist from './pages/Donor_Pages/Donation_hist_page';
 import DonReg from './pages/Donor_Pages/DonorReg_page';
 import DonLog from './pages/Donor_Pages/DonorLogin_page';
 import Eligib from './pages/howtoDonBlood_pages/eligibility_page';
@@ -61,7 +61,7 @@ class Layout extends Component {
           <Route path="/donor/DonorProfile" element={<DonProtectedRoute><DonDashboard /></DonProtectedRoute>} />
           <Route path="/donor/receiveBlood" element={<DonProtectedRoute><RecipientPortal/></DonProtectedRoute>} />
           <Route path="/donor/Appointment" element={<DonProtectedRoute><DonSched /></DonProtectedRoute>} />
-          <Route path="/donor/DonorHistory" element={<DonationHistory />} />
+          <Route path="/donor/DonorHistory" element={<DonHist />} />
           <Route path="/donor/DonorRegistration" element={<DonReg />} />
           <Route path="/donor/DonorLogin" element={<DonLog />} />
           <Route path="/eligibility" element={<Eligib />} />
