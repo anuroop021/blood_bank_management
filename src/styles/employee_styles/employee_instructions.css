@@ -1,18 +1,67 @@
-.section {
-    padding: 100px 20px;
-    margin-top: 60px; 
-    transition: background-color 0.3s ease;
+/* General Styles */
+.manual_section {
+  width: 80%;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.manual_section:hover {
+  transform: scale(1.02);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Typography */
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #555;
+  text-align: justify;
+}
+
+/* manual_Section-Specific Styling */
+#manual_section1 {
+  border-left: 6px solid #007bff;
+  background-color: #f8f9fa;
+}
+
+#manual_section2 {
+  border-left: 6px solid #28a745;
+  background-color: #f1f8f5;
+}
+
+#manual_section3 {
+  border-left: 6px solid #dc3545;
+  background-color: #fff5f5;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .manual_section {
+      width: 95%;
+      padding: 20px;
   }
-  
-  #section1 {
-    background-color: #f4f4f4;
+
+  h2 {
+      font-size: 22px;
   }
-  
-  #section2 {
-    background-color: #eaeaea;
+
+  p {
+      font-size: 16px;
   }
-  
-  #section3 {
-    background-color: #dcdcdc;
-  }
-  
+}

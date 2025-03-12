@@ -356,8 +356,11 @@ app.post('/api/HospitalLogin', async (req, res) => {
     const admin = await Hospital.findOne({ username });
 
     if (admin && admin.password === password) {
-      res.cookie('adminToken', 'yourAdminTokenHere', { httpOnly: true });
-      res.status(200).json({ success: true, message: 'Login successful!' });
+      res.status(200).json({
+        success: true,
+        message: 'Login successful!',
+        userId: admin._id, // Send user ID to store in localStorage
+      });
     } else {
       res.status(401).json({ success: false, message: 'Invalid username or password' });
     }
@@ -366,6 +369,7 @@ app.post('/api/HospitalLogin', async (req, res) => {
     res.status(500).json({ message: 'Error during login' });
   }
 });
+
 
 app.post('/api/hospitals/register', async (req, res) => {
   try {

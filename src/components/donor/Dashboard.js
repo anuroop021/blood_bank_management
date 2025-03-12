@@ -59,7 +59,7 @@ class Dashboard extends Component {
     }
 
     return (
-      <div className="dashboard-container">
+      <div className="donor-dashboard-container">
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         {donorDetails ? (

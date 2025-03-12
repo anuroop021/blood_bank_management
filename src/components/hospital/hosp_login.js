@@ -1,16 +1,16 @@
 import React from "react";
 import { FaUser } from "react-icons/fa";
 import { Navigate } from "react-router-dom";
-import '../../styles/AdminStyles/admin_login.css';
+import "../../styles/AdminStyles/admin_login.css";
 
 class HospitalLogin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
-      errorMessage: '',
-      successMessage: '',
+      username: "",
+      password: "",
+      errorMessage: "",
+      successMessage: "",
       redirectToDashboard: false,
     };
   }
@@ -23,34 +23,40 @@ class HospitalLogin extends React.Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     const { username, password } = this.state;
-
+  
     try {
-      const response = await fetch('/api/HospitalLogin', {
-        method: 'POST',
+      const response = await fetch("/api/HospitalLogin", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
-        this.setState({ 
-          successMessage: 'Login successful!', 
-          errorMessage: '', 
-          redirectToDashboard: true 
+        localStorage.setItem("isHospLoggedIn", "true"); // Set login flag
+        this.setState({
+          successMessage: "Login successful!",
+          errorMessage: "",
+          redirectToDashboard: true,
         });
-        
-        localStorage.setItem('isHospLoggedIn', 'true');
       } else {
-        this.setState({ errorMessage: 'Invalid username or password', successMessage: '' });
+        this.setState({
+          errorMessage: "Invalid username or password",
+          successMessage: "",
+        });
       }
     } catch (error) {
-      console.error('Error during login:', error);
-      this.setState({ errorMessage: 'An error occurred, please try again', successMessage: '' });
+      console.error("Error during login:", error);
+      this.setState({
+        errorMessage: "An error occurred, please try again",
+        successMessage: "",
+      });
     }
   };
+  
 
   render() {
     const { username, password, errorMessage, successMessage, redirectToDashboard } = this.state;
@@ -88,7 +94,6 @@ class HospitalLogin extends React.Component {
               />
             </div>
             <button type="submit">Login</button>
-            
           </form>
         </div>
       </div>

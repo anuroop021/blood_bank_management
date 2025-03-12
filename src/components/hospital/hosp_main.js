@@ -11,9 +11,13 @@ class HospitalMain extends React.Component {
   }
 
   handleSignOut = () => {
-    localStorage.removeItem('isHospLoggedIn');
-    this.setState({ isLoggedOut: true });
+    localStorage.setItem("isHospLoggedIn", "false"); 
+    this.setState({ isLoggedOut: true }, () => {
+      window.location.href = "/hospital"; 
+    });
   };
+  
+  
 
   render() {
     if (this.state.isLoggedOut) {
