@@ -156,7 +156,9 @@ class HospitalPayment extends React.Component {
                                 value={this.state.dateNeeded}
                                 onChange={this.handleChange}
                                 required
+                                min={new Date().toISOString().split("T")[0]}
                             />
+
                         </div>
 
                         <div className="input-box">

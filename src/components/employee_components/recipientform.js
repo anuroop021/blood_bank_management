@@ -155,14 +155,16 @@ const RecipientPortal = () => {
 
                     <div className="input-box">
                         <input
-                            type="date"
-                            id="dateNeeded"
-                            name="dateNeeded"
-                            value={formData.dateNeeded}
-                            onChange={handleChange}
-                            required
+                           type="date"
+                           id="dateNeeded"
+                           name="dateNeeded"
+                           value={formData.dateNeeded}
+                           onChange={handleChange}
+                           required
+                           min={new Date().toISOString().split("T")[0]} 
                         />
-                    </div>
+                     </div>
+
 
                     <div className="input-box">
                         <textarea
