@@ -71,7 +71,7 @@ const DonorSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function (v) {
-        return /^\d{10}$/.test(v);
+        return /^[1-9]\d{9}$/.test(v);
       },
       message: props => `${props.value} is not a valid mobile number!`
     }
@@ -103,6 +103,9 @@ const DonorSchema = new mongoose.Schema({
   idDocument: String,
 });
 
+DonorSchema.index({ email: 1 });
+DonorSchema.index({ username: 1 });
+DonorSchema.index({ bloodGroup: 1 });
 
 const TimeSlotSchema = new mongoose.Schema({
   date: {
@@ -152,11 +155,10 @@ const ScheduleSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  is_verified_by_mp: {
-    type: Number,
-    default: 0
-  }
 });
+ScheduleSchema.index({ date: 1, bloodGroup: 1, is_verified_by_mp: 1 });
+
+
 const DonorModel = mongoose.model("Donor", DonorSchema);
 const TimeSlotModel = mongoose.model("TimeSlot", TimeSlotSchema);
 const ScheduleModel = mongoose.model("Schedule", ScheduleSchema);

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../styles/payment/payment.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation} from 'react-router-dom';
 
 const savePaymentTransaction = (transactionData) => {
-
   fetch('/api/payment', {
     method: 'POST',
     headers: {
@@ -23,11 +22,50 @@ const savePaymentTransaction = (transactionData) => {
 const PaymentPage = () => {
   const navigate = useNavigate();
 
-  const [userType, setUserType] = useState('individual');
-  const [bloodType, setBloodType] = useState('');
-  const [bloodUnits, setBloodUnits] = useState(1);
+  const [userType, setUserType] = useState('');
+  const location = useLocation();
+  const [bloodType, setBloodType] = useState(location.state?.bloodType || '');
+  const [bloodUnits, setBloodUnits] = useState(location.state?.bloodUnits || 1);
   const [amount, setAmount] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch('/api/session-info');
+        
+        if (!response.ok) {
+          console.error('No active session');
+          setIsLoading(false);
+          return;
+        }
+
+        const sessionData = await response.json();
+
+        if (sessionData.userType === 'individual') {
+          setUserType('individual');
+        } else if (sessionData.userType === 'hospital') {
+          setUserType('hospital');
+        } else {
+          console.error('Invalid user type in session');
+        }
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching session info:', error);
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
+  useEffect(() => {
+    setAmount(calculateAmount());
+  }, [userType, bloodUnits]);
+  
 
   const bloodInventory = {
     'A+': 50,
@@ -59,14 +97,16 @@ const PaymentPage = () => {
     const units = parseInt(e.target.value, 10);
     if (!isNaN(units) && units > 0) {
       setBloodUnits(units);
-      calculateAmount(userType, units);
+      setAmount(calculateAmount(userType, units));
     }
   };
 
-  const calculateAmount = (userType, bloodUnits) => {
-    const unitPrice = pricePerUnit[userType];
-    setAmount(unitPrice * bloodUnits);
+  const calculateAmount = () => {
+    if (!pricePerUnit[userType]) return 0;
+    return pricePerUnit[userType] * bloodUnits;
   };
+  
+  
 
   const handlePayNow = () => {
     if (!bloodInventory[bloodType]) {
@@ -99,52 +139,53 @@ const PaymentPage = () => {
     }
   };
 
+  const isUserTypeFixed = userType === 'individual' || userType === 'hospital';
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!userType) {
+    return <div>Unable to determine user type. Please log in.</div>;
+  }
+
   return (
     <div className="container">
       <h1>Payment Page</h1>
-
+  
       <label>User Type:</label>
-      <select value={userType} onChange={handleUserTypeChange}>
+      <select 
+        value={userType} 
+        onChange={handleUserTypeChange}
+        disabled={isUserTypeFixed}
+      >
         <option value="individual">Individual</option>
         <option value="hospital">Hospital</option>
       </select>
-
+  
       <label>Blood Type:</label>
       <input
         type="text"
         value={bloodType}
         onChange={handleBloodTypeChange}
         placeholder="Enter blood type (e.g., A+, O-)"
+        disabled={location.state?.bloodType ? true : false}
       />
-
+  
       <label>Number of Blood Units:</label>
       <div id="blood-units">
-        <button
-          onClick={() =>
-            setBloodUnits(Math.max(bloodUnits - 1, 1), calculateAmount(userType, bloodUnits - 1))
-          }
-        >
-          -
-        </button>
         <input
           type="number"
           value={bloodUnits}
           onChange={handleBloodUnitsChange}
           min="1"
         />
-        <button
-          onClick={() =>
-            setBloodUnits(bloodUnits + 1, calculateAmount(userType, bloodUnits + 1))
-          }
-        >
-          +
-        </button>
       </div>
-
+  
       <h3 className="total-amount">Total Amount: {amount}</h3>
-
+  
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-
+  
       {bloodType &&
         bloodInventory[bloodType] >= bloodUnits &&
         !errorMessage && (
@@ -154,6 +195,6 @@ const PaymentPage = () => {
         )}
     </div>
   );
-};
+}  
 
 export default PaymentPage;

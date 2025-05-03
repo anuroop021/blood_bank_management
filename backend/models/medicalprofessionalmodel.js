@@ -30,4 +30,6 @@ const medicalProfessionalSchema = new mongoose.Schema({
 });
 
  
+medicalProfessionalSchema.index({ username: 1 }, { unique: true });
+
 module.exports = mongoose.model('medicalProfessional', medicalProfessionalSchema);

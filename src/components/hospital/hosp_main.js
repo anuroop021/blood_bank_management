@@ -10,15 +10,23 @@ class HospitalMain extends React.Component {
     };
   }
 
-  handleSignOut = () => {
-    localStorage.setItem("isHospLoggedIn", "false"); 
-    this.setState({ isLoggedOut: true }, () => {
-      window.location.href = "/hospital"; 
-    });
+  handleSignOut = async () => {
+    try {
+      const response = await fetch('/api/hospitalLogout', {
+        method: 'POST',
+        credentials: 'include', 
+      });
+  
+      if (response.ok) {
+        window.location.href = "/hospital"; 
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
   
-  
-
   render() {
     if (this.state.isLoggedOut) {
       return <Navigate to="/hospital" />;
