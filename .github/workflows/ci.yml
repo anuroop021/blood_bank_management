@@ -39,8 +39,8 @@ jobs:
 
     - name: Run tests
       run: |
-        cd backend
-        npm test  # Run your backend tests here
+        cd src
+        npm test  # Run your frontend tests here
 
     - name: Build and push Docker image
       run: |
