@@ -121,7 +121,7 @@ app.use('/api/doctors',doctorsroute);
 // Admin routes---------------------------------------------------------------------------------------------------
 app.get('/api/dondash', async (req, res) => {
   const cacheKey = 'dashboardData';
-
+  const startTime = Date.now();
   try {
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
@@ -140,6 +140,11 @@ app.get('/api/dondash', async (req, res) => {
     const dashboardData = { totalBloodUnits, numberOfDonors, numberOfEmployees };
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(dashboardData));
 
+    const endTime = Date.now(); 
+    const latency = endTime - startTime; 
+    
+    console.log(`Latency for /api/someRoute: ${latency}ms`);
+
     res.json(dashboardData);
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
@@ -148,6 +153,7 @@ app.get('/api/dondash', async (req, res) => {
 });
 app.get('/api/blood-group-counts', async (req, res) => {
   const cacheKey = 'bloodGroupCounts';
+  const startTime = Date.now();
 
   try {
     const cachedData = await redisClient.get(cacheKey);
@@ -163,6 +169,11 @@ app.get('/api/blood-group-counts', async (req, res) => {
     ]);
 
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(bloodGroupCounts));
+
+    const endTime = Date.now(); 
+    const latency = endTime - startTime; 
+    console.log(`Latency for /api/someRoute: ${latency}ms`);
+
     res.json(bloodGroupCounts);
   } catch (err) {
     console.error('Error:', err);
@@ -172,6 +183,8 @@ app.get('/api/blood-group-counts', async (req, res) => {
 
 app.get('/api/counts', async (req, res) => {
   const cacheKey = 'countsData';
+  const startTime = Date.now();
+
   try {
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
@@ -198,6 +211,10 @@ app.get('/api/counts', async (req, res) => {
 
 
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(countsData));
+
+    const endTime = Date.now(); 
+    const latency = endTime - startTime; 
+    console.log(`Latency for /api/someRoute: ${latency}ms`);
 
     res.json(countsData);
   } catch (error) {
@@ -227,11 +244,12 @@ app.post('/api/adminLogout', (req, res) => {
 });
 app.get('/api/donorAD', async (req, res) => {
   const cacheKey = 'donorAD';
+  const startTime = Date.now();
   try {
     const cachedDonors = await redisClient.get(cacheKey);
     if (cachedDonors) {
       console.log('Served from Redis cache');
-      return res.json(JSON.parse(cachedDonors)); // Send cached response
+      return res.json(JSON.parse(cachedDonors)); 
     }
 
     console.log('Fetched from MongoDB (not cached)');
@@ -247,6 +265,9 @@ app.get('/api/donorAD', async (req, res) => {
     }));
     
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(formattedDonors));
+    endTime = Date.now();
+    latency = endTime - startTime;
+    console.log(`Latency for /api/someRoute: ${latency}ms`);
 
     res.json(formattedDonors);
   } catch (error) {
