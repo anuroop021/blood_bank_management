@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
 
-const generateTransactionID = () => {
-  return 'TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-};
 
 const paymentTransactionSchema = new mongoose.Schema({
   transactionID: {
     type: String,
     required: true,
     unique: true,
-    default: generateTransactionID, 
+  },
+  userType: {
+    type: String,
+    required: true,
+    enum: ['individual', 'hospital'],
   },
   bloodType: {
     type: String,
@@ -37,21 +38,15 @@ const paymentTransactionSchema = new mongoose.Schema({
     default: Date.now,
   },
   donor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Donor',
-    required: function() {
-      return this.hospitalID == null; 
-    },
-    default: null, 
+    type: String,
+    default: null,
   },
   hospitalID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hospital', 
-    required: function() {
-      return this.donor == null; 
-    },
-    default: null, 
+    type: String,
+    default: null,
   },
 });
+
+paymentTransactionSchema.index({ transactionStatus: 1});
 
 module.exports = mongoose.model('PaymentTransaction', paymentTransactionSchema);

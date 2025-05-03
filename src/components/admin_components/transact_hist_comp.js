@@ -10,7 +10,7 @@ class AdminTransDet extends React.Component {
       hospitalPage: 0,
       individualPage: 0,
       transactionsPerPage: 10,
-      dateRange: 'all', // New state for selected date range
+      dateRange: 'all',
     };
   }
 
@@ -41,24 +41,24 @@ class AdminTransDet extends React.Component {
 
       switch (dateRange) {
         case 'lastDay':
-          return diffTime <= 24 * 60 * 60 * 1000; // 1 day
+          return diffTime <= 24 * 60 * 60 * 1000;
         case 'lastMonth':
-          return diffTime <= 30 * 24 * 60 * 60 * 1000; // 1 month
+          return diffTime <= 30 * 24 * 60 * 60 * 1000;
         case 'last3Months':
-          return diffTime <= 90 * 24 * 60 * 60 * 1000; // 3 months
+          return diffTime <= 90 * 24 * 60 * 60 * 1000;
         case 'last6Months':
-          return diffTime <= 180 * 24 * 60 * 60 * 1000; // 6 months
+          return diffTime <= 180 * 24 * 60 * 60 * 1000;
         case 'lastYear':
-          return diffTime <= 365 * 24 * 60 * 60 * 1000; // 1 year
+          return diffTime <= 365 * 24 * 60 * 60 * 1000;
         case 'all':
         default:
-          return true; // No filter
+          return true;
       }
     });
 
     const hospitalTransactions = filteredData.filter((transaction) => transaction.userType === 'hospital');
     const individualTransactions = filteredData.filter((transaction) => transaction.userType === 'individual');
-    
+
     this.setState({ hospitalTransactions, individualTransactions });
   };
 
@@ -126,7 +126,7 @@ class AdminTransDet extends React.Component {
     const start = currentPage * transactionsPerPage;
     const end = start + transactionsPerPage;
     const currentTransactions = transactions.slice(start, end);
-
+  
     return (
       <div className={`transaction-section ${userType.toLowerCase()}-section`}>
         <h3 className="transaction-heading">{userType} Transactions</h3>
@@ -134,6 +134,8 @@ class AdminTransDet extends React.Component {
           <thead>
             <tr>
               <th>S.No</th>
+              <th>Transaction ID</th>
+              <th>{userType === 'Hospital' ? 'Hospital ID' : 'Donor'}</th>
               <th>Blood Type</th>
               <th>Blood Units</th>
               <th>Amount</th>
@@ -145,6 +147,10 @@ class AdminTransDet extends React.Component {
             {currentTransactions.map((transaction, index) => (
               <tr key={transaction._id}>
                 <td>{start + index + 1}</td>
+                <td>{transaction.transactionID}</td>
+                <td>
+                {transaction.userType === 'hospital'? transaction.hospitalID || "N/A": transaction.donor || "N/A"}
+                </td>
                 <td>{transaction.bloodType}</td>
                 <td>{transaction.bloodUnits}</td>
                 <td>{transaction.amount}</td>

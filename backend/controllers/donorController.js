@@ -2,6 +2,14 @@ const { DonorModel, ScheduleModel, TimeSlotModel } = require('../models/donorMod
 const bcrypt = require('bcrypt');
 const multer = require("multer");
 const path = require('path');
+const redis = require("redis");
+const redisClient = redis.createClient({
+  socket: {
+    host: 'localhost', 
+    port: 6379
+  }
+}); 
+redisClient.connect()
 
 
 // Configure storage
@@ -66,11 +74,15 @@ exports.loginDonor = async (req, res) => {
     }
 
     req.session.donor = { _id: donor._id, username: donor.username };
+
     req.session.save((err) => {
       if (err) {
         console.error("Error saving session:", err);
         return res.status(500).json({ message: 'Error during session initialization.' });
       }
+
+      console.log("Session after login:", req.session); // ✅ Debugging
+
       res.status(200).json({ message: 'Login successful' });
     });
   } catch (error) {
@@ -78,6 +90,7 @@ exports.loginDonor = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
 
 
 exports.logoutDonor = (req, res) => {
@@ -96,10 +109,20 @@ exports.getDonorProfile = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    const cacheKey = `donorProfile_${req.session.donor._id}`; 
+
+    const cachedProfile = await redisClient.get(cacheKey);
+    if (cachedProfile) {
+      console.log('Served from Redis cache');
+      return res.status(200).json(JSON.parse(cachedProfile)); // Return cached donor profile
+    }
+
     const donor = await DonorModel.findById(req.session.donor._id);
     if (!donor) {
       return res.status(404).json({ message: "Donor not found." });
     }
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(donor));
 
     res.status(200).json(donor);
   } catch (error) {
@@ -133,16 +156,21 @@ exports.getAvailableTimeSlots = async (req, res) => {
   try {
     const { date } = req.query;
     const selectedDate = new Date(date);
+
+    const cacheKey = `availableSlots_${date}`;
     
-    // Check if date is in the past
     if (selectedDate < new Date().setHours(0, 0, 0, 0)) {
       return res.status(400).json({ message: "Cannot book appointments for past dates" });
     }
 
-    // Get all time slots for the selected date
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log("Served from Redis cache");
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     let timeSlots = await TimeSlotModel.find({ date: selectedDate });
 
-    // If no slots exist for this date, create them
     if (timeSlots.length === 0) {
       const defaultSlots = ['9:00 AM-10:00 AM', '10:00 AM-11:00 AM', '11:00 AM-12:00 PM', '12:00 PM-1:00 AM', '2:00 PM-3:00 PM', '3:00 PM-4:00 PM', '4:00 PM-5:00 PM', '5:00 PM-6:00 PM', '6:00 PM-7:00 PM', '7:00 PM-8:00 PM']
         .map(slot => ({
@@ -154,12 +182,14 @@ exports.getAvailableTimeSlots = async (req, res) => {
       timeSlots = await TimeSlotModel.insertMany(defaultSlots);
     }
 
-    // Format slots for frontend
     const availableSlots = timeSlots.map(slot => ({
       slot: slot.slot,
       available: slot.bookedCount < 15,
       remainingSpots: 15 - slot.bookedCount
     }));
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(availableSlots));
+    console.log("Fetched from MongoDB and cached");
 
     res.status(200).json(availableSlots);
   } catch (error) {
@@ -174,12 +204,10 @@ exports.scheduleAppointment = async (req, res) => {
   try {
     const selectedDate = new Date(date);
     
-    // Validate date
     if (selectedDate < new Date().setHours(0, 0, 0, 0)) {
       return res.status(400).json({ message: "Cannot book appointments for past dates" });
     }
 
-    // Find or create time slot
     let timeSlotDoc = await TimeSlotModel.findOne({ 
       date: selectedDate,
       slot: timeSlot
@@ -193,18 +221,15 @@ exports.scheduleAppointment = async (req, res) => {
       });
     }
 
-    // Check availability
     if (timeSlotDoc.bookedCount >= 15) {
       return res.status(400).json({ message: "This time slot is fully booked" });
     }
 
-    // Get donor information
     const donor = await DonorModel.findById(req.session.donor._id);
     if (!donor) {
       return res.status(404).json({ message: "Donor not found" });
     }
 
-    // Create appointment
     const newSchedule = new ScheduleModel({
       name: donor.username,
       bloodGroup: donor.bloodGroup,
@@ -213,10 +238,8 @@ exports.scheduleAppointment = async (req, res) => {
       address
     });
 
-    // Update slot count
     timeSlotDoc.bookedCount += 1;
     
-    // Save both documents
     await Promise.all([
       newSchedule.save(),
       timeSlotDoc.save()
@@ -235,14 +258,25 @@ exports.getDonationHistory = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    const cacheKey = `donationHistory_${donorSession.username}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      console.log("Served donation history from Redis cache");
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     const schedules = await ScheduleModel.find({
       name: req.session.donor.username,
       is_verified_by_mp: 1
-    }).sort({ date: -1 }); // Sort by date in descending order
+    }).sort({ date: -1 }); 
 
     if (!schedules.length) {
-      return res.status(200).json([]); // Return empty array if no verified donations
+      return res.status(200).json([]); 
     }
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(schedules)); 
+    console.log("Fetched donation history from MongoDB (not cached)");
 
     res.status(200).json(schedules);
   } catch (error) {
@@ -250,4 +284,15 @@ exports.getDonationHistory = async (req, res) => {
     return res.status(500).json({ message: "Error fetching donation history." });
   }
 };
+
+exports.getSession = (req, res) => {
+  if (req.session.donor) {
+      res.json({ username: req.session.donor.username });
+  } else {
+      res.status(401).json({ message: 'Not logged in' });
+  }
+};
+
+
+
 

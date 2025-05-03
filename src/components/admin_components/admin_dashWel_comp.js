@@ -30,10 +30,23 @@ class AdmdashWelcome extends React.Component {
       });
   }
 
-  handleSignOut = () => {
-    localStorage.removeItem('isAdminLoggedIn');
-    this.setState({ isLoggedOut: true });
+  handleSignOut = async () => {
+    try {
+      const response = await fetch('/api/adminLogout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        this.setState({ isLoggedOut: true });
+      } else {
+        console.error('Logout failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
+  
 
   render() {
     const { val1, val2, val3, isLoggedOut } = this.state;

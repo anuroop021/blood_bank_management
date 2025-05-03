@@ -8,6 +8,17 @@ const session = require('express-session');
 const morgan = require('morgan');
 const csurf = require('csurf');
 const helmet = require('helmet');
+const redis = require('redis');
+const redisClient = redis.createClient({
+  socket: {
+    host: 'localhost', 
+    port: 6379
+  }
+}); 
+redisClient.connect()
+  .then(() => console.log('Connected to Redis'))
+  .catch(err => console.error('Redis connection error:', err));
+
 
 mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
   .then(() => {
@@ -38,10 +49,11 @@ app.use(session({
   saveUninitialized: false,
   cookie: { 
     httpOnly: true, 
-    secure: process.env.NODE_ENV === 'production', 
+    secure: false, 
     sameSite: 'strict', 
   }
 }));
+
 
 //third party middleware
 const csrfProtection = csurf({ cookie: true });
@@ -105,47 +117,70 @@ app.use('/api/updatedoctor', updatedoctorroute);
 app.use('/api/medicalprofessional/login', medicalprofessionalloginroute);
 app.use('/api/assigneddonors',assigneddonorsroute);
 app.use('/api/doctors',doctorsroute);
+
 // Admin routes---------------------------------------------------------------------------------------------------
-
 app.get('/api/dondash', async (req, res) => {
-  try {
-    const uniqueDonors = await DonorModel.distinct('email'); 
-    const numberOfDonors = uniqueDonors.length;
-    const numberOfEmployees = await Employee.countDocuments(); 
-    const totalBloodUnits = await ScheduleModel.countDocuments({ is_verified_by_mp: 1 }); 
+  const cacheKey = 'dashboardData';
 
-    res.json({
-      totalBloodUnits,
-      numberOfDonors,
-      numberOfEmployees
-  
-    });
+  try {
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedData));
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
+
+    const [numberOfDonors, numberOfEmployees, totalBloodUnits] = await Promise.all([
+      DonorModel.estimatedDocumentCount(), 
+      Employee.estimatedDocumentCount(),
+      ScheduleModel.countDocuments({ is_verified_by_mp: 1 })
+    ]);
+
+    const dashboardData = { totalBloodUnits, numberOfDonors, numberOfEmployees };
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(dashboardData));
+
+    res.json(dashboardData);
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     res.status(500).json({ message: 'Failed to fetch dashboard data.' });
   }
 });
 app.get('/api/blood-group-counts', async (req, res) => {
+  const cacheKey = 'bloodGroupCounts';
+
   try {
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedData));
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
     const bloodGroupCounts = await ScheduleModel.aggregate([
-      {
-        $match: { is_verified_by_mp: 1 }  
-      },
-      {
-        $group: {
-          _id: "$bloodGroup",
-          count: { $sum: 1 }
-        }
-      }
+      { $match: { is_verified_by_mp: 1 } },
+      { $group: { _id: "$bloodGroup", count: { $sum: 1 } } }
     ]);
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(bloodGroupCounts));
     res.json(bloodGroupCounts);
-  } catch (error) {
-    console.error("Error fetching blood group counts:", error);
-    res.status(500).send("Server Error");
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).send('Server error');
   }
 });
+
 app.get('/api/counts', async (req, res) => {
+  const cacheKey = 'countsData';
   try {
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedData));
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
+
     const donorsRegistered = await DonorModel.countDocuments();
     const donationsDone = await ScheduleModel.aggregate([
       { $match: { is_verified_by_mp: 1 } }, 
@@ -154,12 +189,17 @@ app.get('/api/counts', async (req, res) => {
     const employeesRegistered = await Employee.countDocuments();
     const bloodUnitsCollected = donationsDone.length; 
 
-    res.json({ 
-      donorsRegistered, 
-      employeesRegistered, 
-      donationsDone: donationsDone.length, 
-      bloodUnitsCollected 
-    });
+    const countsData = {
+      donorsRegistered,
+      employeesRegistered,
+      donationsDone: donationsDone.length,
+      bloodUnitsCollected
+    };
+
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(countsData));
+
+    res.json(countsData);
   } catch (error) {
     console.error("Error fetching counts:", error);
     res.status(500).send("Server Error");
@@ -186,7 +226,16 @@ app.post('/api/adminLogout', (req, res) => {
   res.status(200).json({ success: true, message: 'Logout successful!' });
 });
 app.get('/api/donorAD', async (req, res) => {
+  const cacheKey = 'donorAD';
   try {
+    const cachedDonors = await redisClient.get(cacheKey);
+    if (cachedDonors) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedDonors)); // Send cached response
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
+
     const donors = await DonorModel.find().select('fname lname phone bloodGroup email age');
     const formattedDonors = donors.map(donor => ({
       _id: donor._id,
@@ -197,19 +246,40 @@ app.get('/api/donorAD', async (req, res) => {
       age: donor.age,
     }));
     
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(formattedDonors));
+
     res.json(formattedDonors);
   } catch (error) {
     console.error('Error fetching donors:', error);
     res.status(500).json({ message: 'Failed to fetch donors.' });
   }
 });
+app.get('/api/checkAdminAuth', (req, res) => {
+  const adminToken = req.cookies.adminToken;
+
+  if (adminToken === 'yourAdminTokenHere') {
+    res.json({ isAuthenticated: true });
+  } else {
+    res.json({ isAuthenticated: false });
+  }
+});
 
 
-
+//admin employee
 app.get('/api/employees',  async (req, res) => {
+  const cacheKey = 'employeesData';
   try {
+    const cachedEmployees = await redisClient.get(cacheKey);
+    if (cachedEmployees) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedEmployees)); 
+    }
+    
+    console.log('Fetched from MongoDB (not cached)');
     const employees = await Employee.find(); 
-    res.json(employees); 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(employees)); // Cache for 1 hour
+
+    res.json(employees);
   } catch (error) {
     console.error('Error fetching employees:', error);
     res.status(500).json({ message: 'Failed to fetch employees.' });
@@ -271,8 +341,18 @@ app.post('/AddEmploy', async (req, res) => {
 
 // Get all hospitals
 app.get('/api/hospitals', async (req, res) => {
+  const cacheKey = 'hospitalsData';
   try {
+    const cachedHospitals = await redisClient.get(cacheKey);
+    if (cachedHospitals) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedHospitals)); 
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
     const hospitals = await Hospital.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(hospitals)); // Cache for 1 hour
+
     res.json(hospitals);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch hospitals' });
@@ -351,13 +431,14 @@ app.delete('/api/hospitals/remove/:id', async (req, res) => {
 app.post('/api/HospitalLogin', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const admin = await Hospital.findOne({ username });
+    const hospital = await Hospital.findOne({ username });
 
-    if (admin && admin.password === password) {
+    if (hospital && hospital.password === password) {
+      req.session.hospital = { username: hospital.username, id: hospital._id }; // Set session here
       res.status(200).json({
         success: true,
         message: 'Login successful!',
-        userId: admin._id, // Send user ID to store in localStorage
+        userId: hospital._id,
       });
     } else {
       res.status(401).json({ success: false, message: 'Invalid username or password' });
@@ -368,104 +449,120 @@ app.post('/api/HospitalLogin', async (req, res) => {
   }
 });
 
+app.post('/api/hospitalLogout', (req, res) => {
+  // Destroy the session for the hospital
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error during session destruction' });
+    }
+    
+    // Clear the session cookie explicitly
+    res.clearCookie('connect.sid');  // This is important!
 
-app.post('/api/hospitals/register', async (req, res) => {
+    res.status(200).json({ success: true, message: 'Hospital logged out successfully' });
+  });
+});
+app.get('/api/checkHospitalAuth', (req, res) => {
+  if (req.session.hospital) {
+    return res.json({ isAuthenticated: true });
+  } else {
+    return res.json({ isAuthenticated: false });
+  }
+});
+app.get('/api/session-info', (req, res) => {
   try {
-    const {
-      username,
-      password,
-      address,
-      contact,
-      email,
-      type,
-      bloodbank_capacity,
-      establishedYear,
-    } = req.body;
 
-    const newHospital = new Hospital({
-      username,
-      password,
-      address,
-      contact,
-      email,
-      type,
-      bloodbank_capacity,
-      establishedYear,
-    });
-
-    await newHospital.save();
-
-    return res.status(200).json({ message: 'Hospital registered successfully!' });
+    if (req.session.donor) {
+      return res.json({ 
+        userType: 'individual', 
+        username: req.session.donor.username 
+      });
+    }
+    
+    // Check if hospital is in session
+    if (req.session.hospital) {
+      return res.json({ 
+        userType: 'hospital', 
+        username: req.session.hospital.username 
+      });
+    }
+    
+    // If no session found
+    return res.status(401).json({ message: 'No active session' });
   } catch (error) {
-    return res.status(500).json({
-      message: 'Error occurred while registering hospital.',
-      error: error.message,
-    });
+    console.error('Error checking session:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-app.post('/api/HospitalPayment', async (req, res) => {
-  try {
-    const {
-      HospitalName, bloodType, contactNumber, requiredUnits,
-      urgencyLevel, dateNeeded, additionalInfo,
-    } = req.body;
 
-    const newHospPayment = new HospPayment({
-      HospitalName,
-      bloodType,
-      contactNumber,
-      requiredUnits,
-      urgencyLevel,
-      dateNeeded,
-      additionalInfo,
-  
-    });
 
-    await newHospPayment.save();
-
-    res.status(201).json({ success: true, message: 'Request stored successfully' });
-  } catch (error) {
-    console.error('Error saving hospital payment request:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
+//payments
 app.post('/api/payment', async (req, res) => {
   try {
-    const userId = req.cookies.userId; 
-
-    if (!userId) {
-      return res.status(400).json({ message: 'User not authenticated' });
-    }
-
-    const donor = await DonorModel.findById(userId);
-    const hospital = await HospitalModel.findById(userId);
-
-    if (!donor && !hospital) {
-      return res.status(400).json({ message: 'Invalid user ID' });
+    if (!req.session.donor && !req.session.hospital) {
+      return res.status(401).json({ message: 'User not authenticated' });
     }
 
     const { bloodType, bloodUnits, amount, transactionStatus } = req.body;
 
+    const userType = req.session.donor ? "individual" : "hospital";
+    const userIdentifier = req.session.donor ? req.session.donor.username : req.session.hospital.name;
+
     const newTransaction = new PaymentTransaction({
+      transactionID: `TXN${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      userType,
       bloodType,
       bloodUnits,
       amount,
       transactionStatus,
-      donor: donor ? donor._id : null, 
-      hospitalID: hospital ? hospital._id : null, 
+      donor: req.session.donor ? req.session.donor.username : null,
+      hospitalID: req.session.hospital ? req.session.hospital.username : null,
     });
 
     await newTransaction.save();
-    
+
     res.status(201).json({ message: 'Payment transaction saved successfully', transaction: newTransaction });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error saving payment transaction', error });
   }
 });
+app.post('/api/HospitalPayment', async (req, res) => {
+  try {
+    if (!req.session.hospital) {
+      return res.status(401).json({ success: false, message: 'Hospital not authenticated' });
+    }
 
+    const { bloodType, contactNumber, requiredUnits, urgencyLevel, dateNeeded, additionalInfo } = req.body;
+
+    const newHospPayment = new HospPayment({
+      transactionID: `TXN${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      HospitalName: req.session.hospital.username, 
+      bloodType,
+      contactNumber,
+      requiredUnits,
+      urgencyLevel,
+      dateNeeded,
+      additionalInfo,
+    });
+
+    await newHospPayment.save();
+
+    res.status(201).json({ success: true, message: 'Hospital payment request stored successfully', transaction: newHospPayment });
+  } catch (error) {
+    console.error('Error saving hospital payment request:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+app.get('/api/hospital/session', (req, res) => {
+  if (req.session.hospital) {
+      res.set('Cache-Control', 'no-store');  // Prevents caching
+      res.json(req.session.hospital);
+  } else {
+      res.status(401).json({ message: 'Session expired. Please log in again.' });
+  }
+});
 app.get('/api/paymentTransactions', async (req, res) => {
   const { dateRange } = req.query;
   const currentDate = new Date();
@@ -501,9 +598,22 @@ app.get('/api/paymentTransactions', async (req, res) => {
     res.status(500).send('Error fetching transactions');
   }
 });
+
+
 app.get('/api/adminDonations', async (req, res) => {
+  const cacheKey = 'adminDonations';
   try {
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedData)); 
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
+
     const donations = await ScheduleModel.find({ is_verified_by_mp: 1 }).exec();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(donations));
+
     res.json(donations);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching donations' });
@@ -511,11 +621,21 @@ app.get('/api/adminDonations', async (req, res) => {
 });
 
 
-
-
+//admin medics
 app.get('/api/medics',  async (req, res) => {
+  const cacheKey = 'medicsData';
   try {
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Served from Redis cache');
+      return res.json(JSON.parse(cachedData)); // Return cached data
+    }
+
+    console.log('Fetched from MongoDB (not cached)');
+
     const medics = await medicalProfessional.find(); 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(medics));
+
     res.json(medics); 
   } catch (error) {
     console.error('Error fetching medics:', error);
