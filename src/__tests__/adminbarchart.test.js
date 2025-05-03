@@ -49,7 +49,7 @@ describe('Barchart Component', () => {
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      // Checks if canvas is rendered (Chart.js renders inside <canvas>)
+
       expect(screen.getByRole('img')).toBeInTheDocument();
     });
   });

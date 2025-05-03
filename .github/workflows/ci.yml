@@ -1,0 +1,49 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        npm install
+
+    - name: Start server with nodemon
+      run: |
+        cd backend
+        nohup npx nodemon server.js &  # Run the server in the background
+
+    - name: Wait for server to start
+      run: |
+        sleep 10  # Adjust this based on your server's startup time
+
+    - name: Run tests
+      run: |
+        cd backend
+        npm test  # Run your backend tests here
+
+    - name: Build and push Docker image
+      run: |
+        cd backend
+        docker build -t my-backend .
+        docker push my-backend
