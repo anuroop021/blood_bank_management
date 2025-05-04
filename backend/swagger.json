@@ -39,6 +39,18 @@
       {
         "name": "Dashboard",
         "description": "Dashboard data operations"
+      },
+      {
+        "name": "Medical Professional",
+        "description": "Medical professional operations"
+      },
+      {
+        "name": "Recipient",
+        "description": "Recipient management operations"
+      },
+      {
+        "name": "Support",
+        "description": "Support operations"
       }
     ],
     "paths": {
@@ -1107,7 +1119,7 @@
         "get": {
           "tags": ["Dashboard"],
           "summary": "Get dashboard data",
-          "description": "Retrieve dashboard data with counts for donors, employees, and blood units",
+          "description": "Retrieve dashboard data with counts for donors, employees, and blood units. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Dashboard data retrieved successfully",
@@ -1156,7 +1168,7 @@
         "get": {
           "tags": ["Dashboard"],
           "summary": "Get blood group counts",
-          "description": "Retrieve counts of donated blood units by blood group",
+          "description": "Retrieve counts of donated blood units by blood group. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Blood group counts retrieved successfully",
@@ -1204,7 +1216,7 @@
         "get": {
           "tags": ["Dashboard"],
           "summary": "Get various counts",
-          "description": "Retrieve counts for donors, employees, donations, and blood units",
+          "description": "Retrieve counts for donors, employees, donations, and blood units. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Counts retrieved successfully",
@@ -1257,7 +1269,7 @@
         "get": {
           "tags": ["Admin"],
           "summary": "Get donors for admin",
-          "description": "Retrieve a list of donors with their information for admin view",
+          "description": "Retrieve a list of donors with their information for admin view. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Donors retrieved successfully",
@@ -1321,7 +1333,7 @@
         "get": {
           "tags": ["Employee"],
           "summary": "Get employees",
-          "description": "Retrieve a list of all employees",
+          "description": "Retrieve a list of all employees. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Employees retrieved successfully",
@@ -1346,7 +1358,7 @@
                         },
                         "shift": {
                           "type": "string",
-                          "example": "Morning"
+                          "example": "9:00 AM - 5:00 PM"
                         },
                         "email": {
                           "type": "string",
@@ -1464,7 +1476,7 @@
                     },
                     "shift": {
                       "type": "string",
-                      "example": "Morning"
+                      "example": "9:00 AM - 5:00 PM"
                     },
                     "email": {
                       "type": "string",
@@ -1508,7 +1520,7 @@
                           },
                           "shift": {
                             "type": "string",
-                            "example": "Morning"
+                            "example": "9:00 AM - 5:00 PM"
                           },
                           "email": {
                             "type": "string",
@@ -1582,7 +1594,7 @@
                     },
                     "shift": {
                       "type": "string",
-                      "example": "Morning"
+                      "example": "9:00 AM - 5:00 PM"
                     },
                     "email": {
                       "type": "string",
@@ -1634,11 +1646,911 @@
           }
         }
       },
+      "/api/employee/login": {
+        "post": {
+          "tags": ["Employee"],
+          "summary": "Employee login",
+          "description": "Authenticate an employee with username and password",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "employee1"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "1234"
+                    }
+                  },
+                  "required": ["username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Login successful"
+                      },
+                      "employee": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                            "example": "employee1"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Invalid credentials"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor-count": {
+        "get": {
+          "tags": ["Dashboard"],
+          "summary": "Get donor count",
+          "description": "Retrieve the total count of donors in the system",
+          "responses": {
+            "200": {
+              "description": "Donor count retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "donorCount": {
+                        "type": "integer",
+                        "example": 150
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching donor count"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/recipient-count": {
+        "get": {
+          "tags": ["Recipient"],
+          "summary": "Get recipient count",
+          "description": "Retrieve the total count of recipients in the system",
+          "responses": {
+            "200": {
+              "description": "Recipient count retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "recipientCount": {
+                        "type": "integer",
+                        "example": 75
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching recipient count"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/recipient-count-by-blood-type": {
+        "get": {
+          "tags": ["Recipient"],
+          "summary": "Get recipient count by blood type",
+          "description": "Retrieve counts of recipients grouped by blood type. May be served from Redis cache if available.",
+          "responses": {
+            "200": {
+              "description": "Recipient counts by blood type retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "A+Ve"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 25
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor-count-by-blood-type": {
+        "get": {
+          "tags": ["Dashboard"],
+          "summary": "Get donor count by blood type",
+          "description": "Retrieve counts of donors grouped by blood type. May be served from Redis cache if available.",
+          "responses": {
+            "200": {
+              "description": "Donor counts by blood type retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "O+Ve"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 45
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/doctor-patient-count": {
+        "get": {
+          "tags": ["Medical Professional"],
+          "summary": "Get doctor-patient counts",
+          "description": "Retrieve counts of patients assigned to each doctor. May be served from Redis cache if available.",
+          "responses": {
+            "200": {
+              "description": "Doctor-patient counts retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "Dr. Smith"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 15
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/issues": {
+        "post": {
+          "tags": ["Support"],
+          "summary": "Submit issue",
+          "description": "Submit a support issue or query",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "john.doe@example.com"
+                    },
+                    "userType": {
+                      "type": "string",
+                      "example": "Donor"
+                    },
+                    "issue": {
+                      "type": "string",
+                      "example": "I'm having trouble scheduling an appointment."
+                    }
+                  },
+                  "required": ["name", "email", "userType", "issue"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Issue submitted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Issue submitted successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error submitting issue"
+                      },
+                      "error": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/assigndoctor": {
+        "get": {
+          "tags": ["Medical Professional"],
+          "summary": "Get all schedules",
+          "description": "Retrieve all donation schedules. May be served from Redis cache if available.",
+          "responses": {
+            "200": {
+              "description": "Schedules retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/updatedoctor/{id}": {
+        "put": {
+          "tags": ["Medical Professional"],
+          "summary": "Assign doctor to donor schedule",
+          "description": "Update the doctor assigned to a specific donation schedule",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the schedule to update"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "doctor": {
+                      "type": "string",
+                      "example": "Dr. Smith"
+                    }
+                  },
+                  "required": ["doctor"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Doctor assignment updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Schedule"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Schedule not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Schedule not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/medicalprofessional/login": {
+        "post": {
+          "tags": ["Medical Professional"],
+          "summary": "Medical professional login",
+          "description": "Authenticate a medical professional with username and password",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "drsmith"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "1234"
+                    }
+                  },
+                  "required": ["username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Login successful"
+                      },
+                      "medicalprofessional": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                            "example": "drsmith"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Invalid credentials"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/assigneddonors": {
+        "get": {
+          "tags": ["Medical Professional"],
+          "summary": "Get unverified donors assigned to a doctor",
+          "description": "Retrieve a list of unverified donors assigned to a specific doctor. May be served from Redis cache if available.",
+          "parameters": [
+            {
+              "name": "username",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Username of the doctor"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Unverified donors retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Schedule"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No unverified patients found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "No unverified patients found for this doctor"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/assigneddonors/verify/{id}": {
+        "put": {
+          "tags": ["Medical Professional"],
+          "summary": "Verify a donor",
+          "description": "Update the verification status of a donor by a medical professional",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the patient/donor to verify"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Patient verified successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Patient verified successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Patient not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Patient not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to verify patient"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/doctors": {
+        "get": {
+          "tags": ["Medical Professional"],
+          "summary": "Get all doctors",
+          "description": "Retrieve a list of all doctors' usernames. May be served from Redis cache if available.",
+          "responses": {
+            "200": {
+              "description": "Doctors retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "example": "drsmith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to fetch doctors"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/recipientportal": {
+        "post": {
+          "tags": ["Recipient"],
+          "summary": "Submit recipient form",
+          "description": "Submit a blood request form for a recipient",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "johndoe"
+                    },
+                    "bloodType": {
+                      "type": "string",
+                      "example": "A+Ve"
+                    },
+                    "contactNumber": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "requiredUnits": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "dateNeeded": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2023-12-25"
+                    },
+                    "additionalInfo": {
+                      "type": "string",
+                      "example": "Urgent requirement for surgery"
+                    }
+                  },
+                  "required": ["username", "bloodType", "contactNumber", "requiredUnits", "dateNeeded"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Form submitted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Form submitted successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "error": {
+                        "type": "string",
+                        "example": "Contact number must be exactly 10 digits"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized. Please log in again."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "/api/hospitals": {
         "get": {
           "tags": ["Hospital"],
           "summary": "Get hospitals",
-          "description": "Retrieve a list of all hospitals",
+          "description": "Retrieve a list of all hospitals. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Hospitals retrieved successfully",
@@ -1996,7 +2908,7 @@
         "get": {
           "tags": ["Admin"],
           "summary": "Get verified donations",
-          "description": "Retrieve a list of all verified blood donations",
+          "description": "Retrieve a list of all verified blood donations. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Donations retrieved successfully",
@@ -2005,42 +2917,7 @@
                   "schema": {
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id": {
-                          "type": "string",
-                          "example": "6123456789abcdef01234567"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "johndoe"
-                        },
-                        "bloodGroup": {
-                          "type": "string",
-                          "example": "O+Ve"
-                        },
-                        "date": {
-                          "type": "string",
-                          "format": "date-time",
-                          "example": "2023-12-20T09:00:00.000Z"
-                        },
-                        "timeSlot": {
-                          "type": "string",
-                          "example": "9:00 AM-10:00 AM"
-                        },
-                        "address": {
-                          "type": "string",
-                          "example": "Blood Bank Center, 123 Main St"
-                        },
-                        "is_verified_by_mp": {
-                          "type": "number",
-                          "example": 1
-                        },
-                        "doctor": {
-                          "type": "string",
-                          "example": "Dr. Smith"
-                        }
-                      }
+                      "$ref": "#/components/schemas/Schedule"
                     }
                   }
                 }
@@ -2069,7 +2946,7 @@
         "get": {
           "tags": ["Medical"],
           "summary": "Get medical professionals",
-          "description": "Retrieve a list of all medical professionals",
+          "description": "Retrieve a list of all medical professionals. May be served from Redis cache if available.",
           "responses": {
             "200": {
               "description": "Medical professionals retrieved successfully",
@@ -2458,7 +3335,8 @@
               "type": "string"
             },
             "shift": {
-              "type": "string"
+              "type": "string",
+              "enum": ["9:00 AM - 5:00 PM", "1:00 PM - 9:00 PM", "10:00 PM - 6:00 AM"]
             },
             "email": {
               "type": "string",
@@ -2466,6 +3344,10 @@
             },
             "address": {
               "type": "string"
+            },
+            "password": {
+              "type": "string",
+              "default": "1234"
             }
           }
         },
@@ -2479,7 +3361,8 @@
               "type": "string"
             },
             "password": {
-              "type": "string"
+              "type": "string",
+              "default": "1234"
             },
             "address": {
               "type": "string"
@@ -2513,20 +3396,19 @@
               "type": "string"
             },
             "password": {
-              "type": "string"
-            },
-            "contactNumber": {
-              "type": "string"
+              "type": "string",
+              "default": "1234"
             },
             "role": {
+              "type": "string",
+              "enum": ["Doctor", "Nurse"]
+            },
+            "contactNumber": {
               "type": "string"
             },
             "email": {
               "type": "string",
               "format": "email"
-            },
-            "address": {
-              "type": "string"
             }
           }
         },
@@ -2559,6 +3441,132 @@
             },
             "doctor": {
               "type": "string"
+            }
+          }
+        },
+        "RecipientPortal": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "patientName": {
+              "type": "string"
+            },
+            "bloodType": {
+              "type": "string"
+            },
+            "contactNumber": {
+              "type": "string"
+            },
+            "requiredUnits": {
+              "type": "integer"
+            },
+            "dateNeeded": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "additionalInfo": {
+              "type": "string"
+            }
+          }
+        },
+        "HospPayment": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "HospitalName": {
+              "type": "string"
+            },
+            "bloodType": {
+              "type": "string"
+            },
+            "contactNumber": {
+              "type": "string"
+            },
+            "requiredUnits": {
+              "type": "integer"
+            },
+            "urgencyLevel": {
+              "type": "string"
+            },
+            "dateNeeded": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "additionalInfo": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "PaymentTransaction": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "transactionID": {
+              "type": "string"
+            },
+            "userType": {
+              "type": "string",
+              "enum": ["individual", "hospital"]
+            },
+            "bloodType": {
+              "type": "string",
+              "enum": ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+            },
+            "bloodUnits": {
+              "type": "integer"
+            },
+            "amount": {
+              "type": "number"
+            },
+            "transactionStatus": {
+              "type": "string",
+              "enum": ["pending", "completed", "failed"],
+              "default": "pending"
+            },
+            "transactionDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "donor": {
+              "type": "string"
+            },
+            "hospitalID": {
+              "type": "string"
+            }
+          }
+        },
+        "Issue": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "userType": {
+              "type": "string"
+            },
+            "issue": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         }
