@@ -9,6 +9,9 @@ const morgan = require('morgan');
 const csurf = require('csurf');
 const helmet = require('helmet');
 const redis = require('redis');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
 const redisClient = redis.createClient({
   socket: {
     host: 'localhost', 
@@ -29,6 +32,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
   });
 
 const app = express();
+
+// API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(helmet());
 app.use(morgan('dev'));

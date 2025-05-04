@@ -1,0 +1,2567 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Blood Bank Management System API",
+      "description": "API documentation for Blood Bank Management System",
+      "version": "1.0.0",
+      "contact": {
+        "name": "API Support",
+        "email": "support@bloodbank.com"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:5000",
+        "description": "Development server"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Donor",
+        "description": "Donor related operations"
+      },
+      {
+        "name": "Admin",
+        "description": "Admin related operations"
+      },
+      {
+        "name": "Employee",
+        "description": "Employee management operations"
+      },
+      {
+        "name": "Hospital",
+        "description": "Hospital management operations"
+      },
+      {
+        "name": "Medical",
+        "description": "Medical professional management"
+      },
+      {
+        "name": "Dashboard",
+        "description": "Dashboard data operations"
+      }
+    ],
+    "paths": {
+      "/api/donor/register": {
+        "post": {
+          "tags": ["Donor"],
+          "summary": "Register a new donor",
+          "description": "Register a new donor with personal and identification details",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "Unique username for the donor",
+                      "example": "johndoe"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password for authentication",
+                      "example": "password123"
+                    },
+                    "fname": {
+                      "type": "string",
+                      "description": "First name of the donor",
+                      "example": "John"
+                    },
+                    "lname": {
+                      "type": "string",
+                      "description": "Last name of the donor",
+                      "example": "Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Email address of the donor",
+                      "example": "john.doe@example.com"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": ["male", "female", "others"],
+                      "description": "Gender of the donor",
+                      "example": "male"
+                    },
+                    "age": {
+                      "type": "integer",
+                      "description": "Age of the donor",
+                      "example": 28
+                    },
+                    "phone": {
+                      "type": "string",
+                      "description": "Phone number of the donor (10 digits)",
+                      "example": "9876543210"
+                    },
+                    "bloodGroup": {
+                      "type": "string",
+                      "enum": ["AB-Ve", "AB+Ve", "A-Ve", "A+Ve", "B-Ve", "B+Ve", "O-Ve", "O+Ve"],
+                      "description": "Blood group of the donor",
+                      "example": "O+Ve"
+                    },
+                    "address": {
+                      "type": "string",
+                      "description": "Address of the donor",
+                      "example": "123 Main St, City"
+                    },
+                    "idType": {
+                      "type": "string",
+                      "enum": ["Aadhar", "Driving License", "PAN", "Passport", "Voter ID"],
+                      "description": "Type of ID document",
+                      "example": "Aadhar"
+                    },
+                    "idNumber": {
+                      "type": "string",
+                      "description": "ID document number",
+                      "example": "123456789012"
+                    },
+                    "idDocument": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "ID document file (image/pdf)"
+                    }
+                  },
+                  "required": ["username", "password", "fname", "lname", "email", "gender", "age", "phone", "bloodGroup", "address", "idType", "idNumber", "idDocument"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Donor registered successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Donor registered successfully."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request - invalid input or username already exists",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Username already exists."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error registering donor."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/login": {
+        "post": {
+          "tags": ["Donor"],
+          "summary": "Donor login",
+          "description": "Authenticate a donor with username and password",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "johndoe"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
+                    }
+                  },
+                  "required": ["username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Login successful"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Invalid credentials"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Internal Server Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/logout": {
+        "post": {
+          "tags": ["Donor"],
+          "summary": "Donor logout",
+          "description": "Logout the currently authenticated donor",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Logout successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Logout successful."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error logging out donor."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/profile": {
+        "get": {
+          "tags": ["Donor"],
+          "summary": "Get donor profile",
+          "description": "Retrieve the profile information of the currently authenticated donor",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Donor profile retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "6123456789abcdef01234567"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                      },
+                      "fname": {
+                        "type": "string",
+                        "example": "John"
+                      },
+                      "lname": {
+                        "type": "string",
+                        "example": "Doe"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                      },
+                      "gender": {
+                        "type": "string",
+                        "example": "male"
+                      },
+                      "age": {
+                        "type": "integer",
+                        "example": 28
+                      },
+                      "phone": {
+                        "type": "string",
+                        "example": "9876543210"
+                      },
+                      "bloodGroup": {
+                        "type": "string",
+                        "example": "O+Ve"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "123 Main St, City"
+                      },
+                      "idType": {
+                        "type": "string",
+                        "example": "Aadhar"
+                      },
+                      "idNumber": {
+                        "type": "string",
+                        "example": "123456789012"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Donor not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Donor not found."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching donor profile."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/profile/update": {
+        "post": {
+          "tags": ["Donor"],
+          "summary": "Update donor profile",
+          "description": "Update the profile information of the currently authenticated donor",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fname": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "lname": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "john.doe@example.com"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "bloodGroup": {
+                      "type": "string",
+                      "enum": ["AB-Ve", "AB+Ve", "A-Ve", "A+Ve", "B-Ve", "B+Ve", "O-Ve", "O+Ve"],
+                      "example": "O+Ve"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "123 Main St, City"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Profile updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Profile updated successfully."
+                      },
+                      "donor": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6123456789abcdef01234567"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "johndoe"
+                          },
+                          "fname": {
+                            "type": "string",
+                            "example": "John"
+                          },
+                          "lname": {
+                            "type": "string",
+                            "example": "Doe"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "john.doe@example.com"
+                          },
+                          "phone": {
+                            "type": "string",
+                            "example": "9876543210"
+                          },
+                          "bloodGroup": {
+                            "type": "string",
+                            "example": "O+Ve"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "123 Main St, City"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Donor not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Donor not found."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error updating donor profile."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/available-slots": {
+        "get": {
+          "tags": ["Donor"],
+          "summary": "Get available time slots",
+          "description": "Retrieve available time slots for blood donation on a specific date",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "date",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date",
+                "example": "2023-12-25"
+              },
+              "description": "Date for which to retrieve available slots"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Available time slots retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "slot": {
+                          "type": "string",
+                          "example": "9:00 AM-10:00 AM"
+                        },
+                        "available": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "remainingSpots": {
+                          "type": "integer",
+                          "example": 12
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request - invalid date",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Cannot book appointments for past dates"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching available time slots"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/appointment": {
+        "post": {
+          "tags": ["Donor"],
+          "summary": "Schedule an appointment",
+          "description": "Schedule a blood donation appointment at a specific date and time",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2023-12-25"
+                    },
+                    "timeSlot": {
+                      "type": "string",
+                      "example": "9:00 AM-10:00 AM"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "Blood Bank Center, 123 Main St"
+                    }
+                  },
+                  "required": ["date", "timeSlot", "address"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Appointment scheduled successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Appointment scheduled successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request - invalid date or time slot fully booked",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "This time slot is fully booked"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Donor not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Donor not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error scheduling appointment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/donationHistory": {
+        "get": {
+          "tags": ["Donor"],
+          "summary": "Get donation history",
+          "description": "Retrieve the blood donation history for the authenticated donor",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Donation history retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "johndoe"
+                        },
+                        "bloodGroup": {
+                          "type": "string",
+                          "example": "O+Ve"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-12-20T09:00:00.000Z"
+                        },
+                        "timeSlot": {
+                          "type": "string",
+                          "example": "9:00 AM-10:00 AM"
+                        },
+                        "address": {
+                          "type": "string",
+                          "example": "Blood Bank Center, 123 Main St"
+                        },
+                        "is_verified_by_mp": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "doctor": {
+                          "type": "string",
+                          "example": "Dr. Smith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Unauthorized"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching donation history."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donor/session": {
+        "get": {
+          "tags": ["Donor"],
+          "summary": "Get donor session information",
+          "description": "Retrieve the current session information for the authenticated donor",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Session information retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Not logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Not logged in"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/adminLogin": {
+        "post": {
+          "tags": ["Admin"],
+          "summary": "Admin login",
+          "description": "Authenticate an admin with username and password",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "admin"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "admin123"
+                    }
+                  },
+                  "required": ["username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Login successful!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Invalid username or password"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error during login"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/adminLogout": {
+        "post": {
+          "tags": ["Admin"],
+          "summary": "Admin logout",
+          "description": "Logout the currently authenticated admin",
+          "security": [
+            {
+              "cookieAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Logout successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Logout successful!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/checkAdminAuth": {
+        "get": {
+          "tags": ["Admin"],
+          "summary": "Check admin authentication",
+          "description": "Check if the admin is currently authenticated",
+          "responses": {
+            "200": {
+              "description": "Authentication status",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "isAuthenticated": {
+                        "type": "boolean",
+                        "example": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/dondash": {
+        "get": {
+          "tags": ["Dashboard"],
+          "summary": "Get dashboard data",
+          "description": "Retrieve dashboard data with counts for donors, employees, and blood units",
+          "responses": {
+            "200": {
+              "description": "Dashboard data retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "totalBloodUnits": {
+                        "type": "integer",
+                        "example": 250
+                      },
+                      "numberOfDonors": {
+                        "type": "integer",
+                        "example": 150
+                      },
+                      "numberOfEmployees": {
+                        "type": "integer",
+                        "example": 20
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to fetch dashboard data."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/blood-group-counts": {
+        "get": {
+          "tags": ["Dashboard"],
+          "summary": "Get blood group counts",
+          "description": "Retrieve counts of donated blood units by blood group",
+          "responses": {
+            "200": {
+              "description": "Blood group counts retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "O+Ve"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 35
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Server error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/counts": {
+        "get": {
+          "tags": ["Dashboard"],
+          "summary": "Get various counts",
+          "description": "Retrieve counts for donors, employees, donations, and blood units",
+          "responses": {
+            "200": {
+              "description": "Counts retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "donorsRegistered": {
+                        "type": "integer",
+                        "example": 150
+                      },
+                      "employeesRegistered": {
+                        "type": "integer",
+                        "example": 20
+                      },
+                      "donationsDone": {
+                        "type": "integer",
+                        "example": 250
+                      },
+                      "bloodUnitsCollected": {
+                        "type": "integer",
+                        "example": 250
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Server Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/donorAD": {
+        "get": {
+          "tags": ["Admin"],
+          "summary": "Get donors for admin",
+          "description": "Retrieve a list of donors with their information for admin view",
+          "responses": {
+            "200": {
+              "description": "Donors retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "donorName": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "phone": {
+                          "type": "string",
+                          "example": "9876543210"
+                        },
+                        "bloodGroup": {
+                          "type": "string",
+                          "example": "O+Ve"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "john.doe@example.com"
+                        },
+                        "age": {
+                          "type": "integer",
+                          "example": 28
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to fetch donors."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/employees": {
+        "get": {
+          "tags": ["Employee"],
+          "summary": "Get employees",
+          "description": "Retrieve a list of all employees",
+          "responses": {
+            "200": {
+              "description": "Employees retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "employee1"
+                        },
+                        "contact": {
+                          "type": "string",
+                          "example": "9876543210"
+                        },
+                        "shift": {
+                          "type": "string",
+                          "example": "Morning"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "employee1@example.com"
+                        },
+                        "address": {
+                          "type": "string",
+                          "example": "456 Oak St, City"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to fetch employees."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/employees/{id}": {
+        "delete": {
+          "tags": ["Employee"],
+          "summary": "Delete employee",
+          "description": "Remove an employee by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the employee to delete"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Employee deleted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Employee removed successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to remove employee."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": ["Employee"],
+          "summary": "Update employee",
+          "description": "Update employee information by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the employee to update"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "employee1"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "shift": {
+                      "type": "string",
+                      "example": "Morning"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "employee1@example.com"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "456 Oak St, City"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Employee updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Employee updated successfully!"
+                      },
+                      "employee": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6123456789abcdef01234567"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "employee1"
+                          },
+                          "contact": {
+                            "type": "string",
+                            "example": "9876543210"
+                          },
+                          "shift": {
+                            "type": "string",
+                            "example": "Morning"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "employee1@example.com"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "456 Oak St, City"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Employee not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Employee not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to update employee"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/AddEmploy": {
+        "post": {
+          "tags": ["Employee"],
+          "summary": "Add employee",
+          "description": "Add a new employee",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "employee1"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "shift": {
+                      "type": "string",
+                      "example": "Morning"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "employee1@example.com"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "456 Oak St, City"
+                    }
+                  },
+                  "required": ["username", "contact", "shift", "email", "address"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Employee added successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Employee added successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to add employee."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/hospitals": {
+        "get": {
+          "tags": ["Hospital"],
+          "summary": "Get hospitals",
+          "description": "Retrieve a list of all hospitals",
+          "responses": {
+            "200": {
+              "description": "Hospitals retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "CityHospital"
+                        },
+                        "address": {
+                          "type": "string",
+                          "example": "789 Hospital Ave, City"
+                        },
+                        "contact": {
+                          "type": "string",
+                          "example": "9876543210"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "info@cityhospital.com"
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Private"
+                        },
+                        "bloodbank_capacity": {
+                          "type": "integer",
+                          "example": 500
+                        },
+                        "establishedYear": {
+                          "type": "integer",
+                          "example": 2000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to fetch hospitals"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/AddHospital": {
+        "post": {
+          "tags": ["Hospital"],
+          "summary": "Add hospital",
+          "description": "Add a new hospital",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "CityHospital"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "hospital123"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "789 Hospital Ave, City"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "info@cityhospital.com"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["Private", "Government"],
+                      "example": "Private"
+                    },
+                    "bloodbank_capacity": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "establishedYear": {
+                      "type": "integer",
+                      "example": 2000
+                    }
+                  },
+                  "required": ["username", "address", "contact", "email", "type", "bloodbank_capacity", "establishedYear"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Hospital added successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Hospital added successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to add hospital"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/hospitals/update/{id}": {
+        "put": {
+          "tags": ["Hospital"],
+          "summary": "Update hospital",
+          "description": "Update hospital information by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the hospital to update"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "CityHospital"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "789 Hospital Ave, City"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "info@cityhospital.com"
+                    },
+                    "shift": {
+                      "type": "string",
+                      "example": "24Hours"
+                    },
+                    "bloodbank_capacity": {
+                      "type": "integer",
+                      "example": 600
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Hospital updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "6123456789abcdef01234567"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "CityHospital"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "789 Hospital Ave, City"
+                      },
+                      "contact": {
+                        "type": "string",
+                        "example": "9876543210"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "info@cityhospital.com"
+                      },
+                      "shift": {
+                        "type": "string",
+                        "example": "24Hours"
+                      },
+                      "bloodbank_capacity": {
+                        "type": "integer",
+                        "example": 600
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Hospital not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Hospital not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to update hospital"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/hospitals/remove/{id}": {
+        "delete": {
+          "tags": ["Hospital"],
+          "summary": "Remove hospital",
+          "description": "Remove a hospital by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the hospital to remove"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Hospital removed successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Hospital removed successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Hospital not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Hospital not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to remove hospital"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/adminDonations": {
+        "get": {
+          "tags": ["Admin"],
+          "summary": "Get verified donations",
+          "description": "Retrieve a list of all verified blood donations",
+          "responses": {
+            "200": {
+              "description": "Donations retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "johndoe"
+                        },
+                        "bloodGroup": {
+                          "type": "string",
+                          "example": "O+Ve"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-12-20T09:00:00.000Z"
+                        },
+                        "timeSlot": {
+                          "type": "string",
+                          "example": "9:00 AM-10:00 AM"
+                        },
+                        "address": {
+                          "type": "string",
+                          "example": "Blood Bank Center, 123 Main St"
+                        },
+                        "is_verified_by_mp": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "doctor": {
+                          "type": "string",
+                          "example": "Dr. Smith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Error fetching donations"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/medics": {
+        "get": {
+          "tags": ["Medical"],
+          "summary": "Get medical professionals",
+          "description": "Retrieve a list of all medical professionals",
+          "responses": {
+            "200": {
+              "description": "Medical professionals retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6123456789abcdef01234567"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "drsmith"
+                        },
+                        "contactNumber": {
+                          "type": "string",
+                          "example": "9876543210"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "Doctor"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "drsmith@example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to fetch medics."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/medics/{id}": {
+        "put": {
+          "tags": ["Medical"],
+          "summary": "Update medical professional",
+          "description": "Update medical professional information by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the medical professional to update"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "drsmith"
+                    },
+                    "contactNumber": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "drsmith@example.com"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "123 Medical St, City"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Medical professional updated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "medic updated successfully!"
+                      },
+                      "medic": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6123456789abcdef01234567"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "drsmith"
+                          },
+                          "contactNumber": {
+                            "type": "string",
+                            "example": "9876543210"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "drsmith@example.com"
+                          },
+                          "address": {
+                            "type": "string",
+                            "example": "123 Medical St, City"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Medical professional not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "medic not found"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "string",
+                        "example": "Failed to update medic"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": ["Medical"],
+          "summary": "Delete medical professional",
+          "description": "Remove a medical professional by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "ID of the medical professional to delete"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Medical professional removed successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "medic removed successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to remove medic."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/AddMedic": {
+        "post": {
+          "tags": ["Medical"],
+          "summary": "Add medical professional",
+          "description": "Add a new medical professional",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "drsmith"
+                    },
+                    "contactNumber": {
+                      "type": "string",
+                      "example": "9876543210"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "Doctor"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "drsmith@example.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
+                    }
+                  },
+                  "required": ["username", "contactNumber", "role", "email"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Medical professional added successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Medic added successfully!"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Failed to add medic."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "cookieAuth": {
+          "type": "apiKey",
+          "in": "cookie",
+          "name": "connect.sid"
+        }
+      },
+      "schemas": {
+        "Donor": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "fname": {
+              "type": "string"
+            },
+            "lname": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "gender": {
+              "type": "string",
+              "enum": ["male", "female", "others"]
+            },
+            "age": {
+              "type": "integer"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "bloodGroup": {
+              "type": "string",
+              "enum": ["AB-Ve", "AB+Ve", "A-Ve", "A+Ve", "B-Ve", "B+Ve", "O-Ve", "O+Ve"]
+            },
+            "address": {
+              "type": "string"
+            },
+            "idType": {
+              "type": "string",
+              "enum": ["Aadhar", "Driving License", "PAN", "Passport", "Voter ID"]
+            },
+            "idNumber": {
+              "type": "string"
+            },
+            "idDocument": {
+              "type": "string"
+            }
+          }
+        },
+        "Admin": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        },
+        "Employee": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "contact": {
+              "type": "string"
+            },
+            "shift": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "address": {
+              "type": "string"
+            }
+          }
+        },
+        "Hospital": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "address": {
+              "type": "string"
+            },
+            "contact": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["Private", "Government"]
+            },
+            "bloodbank_capacity": {
+              "type": "integer"
+            },
+            "establishedYear": {
+              "type": "integer"
+            }
+          }
+        },
+        "MedicalProfessional": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            },
+            "contactNumber": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "address": {
+              "type": "string"
+            }
+          }
+        },
+        "Schedule": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "bloodGroup": {
+              "type": "string",
+              "enum": ["AB-Ve", "AB+Ve", "A-Ve", "A+Ve", "B-Ve", "B+Ve", "O-Ve", "O+Ve"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "timeSlot": {
+              "type": "string"
+            },
+            "address": {
+              "type": "string"
+            },
+            "is_verified_by_mp": {
+              "type": "integer",
+              "default": 0
+            },
+            "doctor": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
