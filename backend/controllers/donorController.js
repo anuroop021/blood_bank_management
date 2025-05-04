@@ -2,6 +2,7 @@ const { DonorModel, ScheduleModel, TimeSlotModel } = require('../models/donorMod
 const bcrypt = require('bcrypt');
 const multer = require("multer");
 const path = require('path');
+const redis = require("redis");
 const redisClient = redis.createClient({
   socket: {
     host: process.env.NODE_ENV === 'production' ? "settling-gecko-22780.upstash.io" : "localhost", // Conditional host
