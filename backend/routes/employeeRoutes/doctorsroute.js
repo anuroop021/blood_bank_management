@@ -1,6 +1,7 @@
 const express = require('express');
 const MedicalProfessional = require('../../models/medicalprofessionalmodel');
 const doctorsrouter = express.Router();
+const redis = require('redis');
 const redisClient = redis.createClient({
   socket: {
     host: process.env.NODE_ENV === 'production' ? "settling-gecko-22780.upstash.io" : "localhost", // Conditional host
