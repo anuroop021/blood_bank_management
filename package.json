@@ -1,0 +1,68 @@
+{
+  "name": "jamm",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.7",
+    "chart.js": "^4.4.4",
+    "connect-redis": "^8.0.3",
+    "cors": "^2.8.5",
+    "framer-motion": "^12.5.0",
+    "jamm": "file:",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.479.0",
+    "multer": "^1.4.5-lts.1",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.3.0",
+    "react-redux": "^9.1.2",
+    "react-router-dom": "^6.26.2",
+    "react-scripts": "5.0.1",
+    "redis": "^5.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:5000",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.27.1",
+    "@babel/preset-react": "^7.27.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "axios-mock-adapter": "^2.1.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^27.5.1",
+    "jest-environment-jsdom": "^29.7.0",
+    "redux-mock-store": "^1.5.5"
+  },
+  "jest": {
+  "transformIgnorePatterns": [
+    "node_modules/(?!axios)/"
+  ]
+}
+}

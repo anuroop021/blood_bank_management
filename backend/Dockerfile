@@ -3,10 +3,15 @@ FROM node:18
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+
+# Install dependencies fresh
 RUN npm install
+
+# Optional: install nodemon globally
+RUN npm install -g nodemon
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["nodemon", "server.js"]
