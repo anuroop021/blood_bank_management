@@ -4,11 +4,16 @@ const doctorpiechartrouter = express.Router();
 const redis = require('redis');
 const redisClient = redis.createClient({
   socket: {
-    host: 'localhost', 
-    port: 6379
-  }
-}); 
+    host: process.env.NODE_ENV === 'production' ? "settling-gecko-22780.upstash.io" : "localhost", // Conditional host
+    port: 6379,
+    tls: process.env.NODE_ENV === 'production' ? true : false, // Use TLS/SSL for Upstash
+  },
+  password: process.env.NODE_ENV === 'production' ? "AVj8AAIjcDEwM2UwZTQ4NmUwZjQ0NjE5YTNhNzVmODY5Y2IyYjg5MXAxMA" : undefined, // Password for Upstash, or undefined for localhost
+});
+
 redisClient.connect()
+  .then(() => console.log('Connected to Redis'))
+  .catch(err => console.error('Redis connection error:', err));
 
 doctorpiechartrouter.get('/', async (req, res) => {
   const cacheKey = 'doctorPieChartCounts';
