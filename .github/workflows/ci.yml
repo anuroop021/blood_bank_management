@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x]
 
     steps:
     - name: Checkout code
@@ -23,26 +23,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: |
-        cd backend
-        npm install
+    - name: Install root/frontend dependencies
+      run: npm install
 
-    - name: Start server with nodemon
-      run: |
-        cd backend
-        nohup npx nodemon server.js &  # Run the server in the background
+    - name: Run frontend tests
+      run: npm test
 
-    - name: Wait for server to start
-      run: |
-        sleep 10  # Adjust this based on your server's startup time
-
-    - name: Run tests
-      run: |
-        npm test  # Run your frontend tests here
-
-    - name: Build and push Docker image
+    - name: Build backend Docker image
       run: |
         cd backend
         docker build -t my-backend .
-        docker push my-backend
