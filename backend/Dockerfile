@@ -1,17 +1,13 @@
+# backend/Dockerfile
 FROM node:18
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-
-# Install dependencies fresh
 RUN npm install
-
-# Optional: install nodemon globally
-RUN npm install -g nodemon
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 5000
 
-CMD ["nodemon", "server.js"]
+CMD ["npx", "nodemon", "server.js"]
