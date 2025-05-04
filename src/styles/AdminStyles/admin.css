@@ -2,11 +2,14 @@
 
 .mdiv {
     margin: 1% 3%;
-    background-color: rgb(244, 236, 236);
+    background-color: rgb(244, 237, 237);
     padding: 20px;
     display: flex;
     justify-content: space-between; 
     align-items: center;
+    font-size: medium;
+    font-family:'Times New Roman', Times, serif;
+  
 }
 #signout {
     width: 200px;
@@ -32,7 +35,7 @@
     margin: 1% 3%;
     padding: 20px;
     color: white;
-    background-color: red;
+    background-color: rgb(213, 62, 62);
     border-radius: 1.5rem;
     transition: transform 0.5s ease, box-shadow 0.3s ease;
     text-align: center;
@@ -40,16 +43,25 @@
 }
 .dash h1 {
     font-size: xxx-large;
+    color:#ffffff;
+}
+.dash h2{
+  color:#ffffff;
 }
 #dash4 {
     border-radius: 0rem;
     background-color: rgb(244, 236, 236);
     color: black;
     display: block;
-    height: 45%;
+    height: 65%;
     width: 45%;
     text-align: left;
-    padding: 30px;
+    padding: 60px;
+    margin-left: 30%;
+    margin-top: 5%;
+}
+.dash1 h2{
+  color: black;
 }
 .dash:hover {
     transform: scale(1.1);
@@ -313,4 +325,6 @@
   #donations-table tr:hover {
     background-color: #f2f2f2;
   }
-  
+
+
+

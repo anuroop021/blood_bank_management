@@ -15,15 +15,18 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+  .donor-dashboard-container {
+    min-height: 100vh;
+   /* adjust path as needed */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
 
-.donor-dashboard-container {
-  
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
 @media (max-width: 480px) {
   .dashboard-card {
     width: 90%;

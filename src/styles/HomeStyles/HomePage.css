@@ -30,6 +30,7 @@
   font-size: 1.5rem;
   margin-bottom: 2rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  color:#f7fafc;
 }
 
 .donate-now-btn {
@@ -115,7 +116,35 @@
   font-size: 2.5rem;
   color: #2d3748;
   margin-bottom: 2rem;
+  content: center;
+  padding: 1rem 6rem;
+  border: 2px solid black;
+  display: inline-block;
+  background: linear-gradient(to right, #f5f4f2 0%, #f6ad55 100%);
+  background-size: 200% auto;
+  transition: background-position 0.5s ease-in-out;
+  border-radius: 8px;
 }
+
+/* Optional animation on hover */
+
+
+
+.blood-type-info h1::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: rgb(240, 43, 43);
+  transition: width 0.5s ease-out;
+}
+
+.blood-type-info h1:hover::before {
+  width: 100%;
+}
+
 
 .table-container {
   overflow-x: auto;
@@ -271,16 +300,19 @@
 .cta-content {
   max-width: 600px;
   margin: 0 auto;
+  color:#f5f4f2;
 }
 
 .cta-content h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
+  color:white;
 }
 
 .cta-content p {
   font-size: 1.25rem;
   margin-bottom: 2rem;
+  color: white;
 }
 
 .cta-button {

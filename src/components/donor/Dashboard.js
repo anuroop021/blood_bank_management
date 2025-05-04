@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import {
-  User,
+  
   Mail,
   Phone,
   Droplet,
@@ -11,6 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import { Navigate } from "react-router-dom";
+// adjust if your path is different
 import "../../styles/donorStyles/Donor.css";
 
 class Dashboard extends Component {
@@ -59,7 +60,18 @@ class Dashboard extends Component {
     }
 
     return (
-      <div className="donor-dashboard-container">
+      <div
+      className="donor-dashboard-container"
+      style={{
+        backgroundImage: `url(/images/bg_image.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        padding: "2rem",
+      }}
+    >
+    
         {errorMessage && <p className="error-message">{errorMessage}</p>}
 
         {donorDetails ? (
@@ -69,7 +81,6 @@ class Dashboard extends Component {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Profile Section */}
             <motion.div
               className="profile-section"
               initial={{ y: -10, opacity: 0 }}
@@ -86,7 +97,6 @@ class Dashboard extends Component {
               </h2>
             </motion.div>
 
-            {/* Info Section */}
             <motion.div
               className="info-section"
               initial={{ x: -20, opacity: 0 }}
@@ -99,7 +109,6 @@ class Dashboard extends Component {
               <p><MapPin className="icon" /> {donorDetails.address}</p>
             </motion.div>
 
-            {/* Buttons Section */}
             <motion.div
               className="button-container"
               initial={{ y: 10, opacity: 0 }}

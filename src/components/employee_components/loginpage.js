@@ -65,10 +65,17 @@ class Login extends React.Component {
     }
 
     return (
-      <div className="outer">
+      <div className="outer" style={{
+        backgroundImage: 'url(/images/bg2.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        width: '100%',
+      }}>
         <div className="loginform">
           <form onSubmit={this.handleSubmit}>
-            <h1 style={{color:'white'}}>Login</h1>
+            <h1 style={{color:'black'}}>Login</h1>
             {errorMessage && <p className="error">{errorMessage}</p>}
             {successMessage && <p className="success">{successMessage}</p>}
             <div className="input-box">

@@ -82,9 +82,7 @@ class HomePage extends Component {
         <div className="hero-section">
           <div className="hero-content">
             <h1>Give the Gift of Life</h1>
-            <p style={{ color: 'white' }}>
-  Every drop counts. Your donation can save up to three lives.
-</p>
+            <p>Every drop counts. Your donation can save up to three lives.</p>
             <Link to="/donor/DonorRegistration">
               <button className="donate-now-btn">Donate Now</button>
             </Link>

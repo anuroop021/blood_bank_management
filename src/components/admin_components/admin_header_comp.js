@@ -1,45 +1,67 @@
-import React from'react';
-import logo from '../../logo.png';
-import {Link} from 'react-router-dom';
-import '../../styles/AdminStyles/Admin_header.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  UserCog,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  
+} from "lucide-react";
+import '../../styles/layout/Header.css'; // make sure styles match the new structure
 
 class AdminHeader extends React.Component {
-  render(){
-    return(
-      <div id="maindiv">
-        <div className='logocont'>
-          <img alt="logo" src={logo} id="logoa" width={256} height={168}></img>
-        </div>
-        <div>
-        <Link className="navi" id="adminHome" to="/Admin/Home">
-            Home
-        </Link>
-        </div>
-        <div>
-        <Link className="navi" id="donorDet" to="/Admin/donorDetails">
-            Donor details
-        </Link>
-        </div>
-        <div>
-        <Link className="navi" id="employeeDet" to="/Admin/employeeManage">
-            Employee Management
-        </Link>
-        </div>
-        
-        <div>
-        <Link className="navi" id="bdreserve" to="/Admin/MedicManage">
-            Medical Professional
-        </Link>
-        </div>
-        <div>
-        <Link className="navi" id="hosp" to="/Admin/hosp">
-            Hospital management
-        </Link>
-        </div>
-        
-        
-      </div>
-    )
+  render() {
+    const {
+      isDarkMode,
+      isMenuOpen,
+      toggleTheme,
+     
+      toggleMenu
+    } = this.props;
+
+    return (
+      <header className={`header ${isDarkMode ? "dark" : ""}`}>
+        <nav className="nav-container">
+          <div className="nav-logo">
+            <Link to="/Admin/Home" className="logo-link">
+              <UserCog className="logo-icon" />
+              <span className="logo-text">Admin Panel</span>
+            </Link>
+          </div>
+
+          <button className="mobile-menu-btn" onClick={toggleMenu}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
+
+          <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+            <div className="nav-item">
+              <Link to="/Admin/Home" className="nav-link">Home</Link>
+            </div>
+            <div className="nav-item">
+              <Link to="/Admin/donorDetails" className="nav-link">Donor Details</Link>
+            </div>
+            <div className="nav-item">
+              <Link to="/Admin/employeeManage" className="nav-link">Employee Management</Link>
+            </div>
+            <div className="nav-item">
+              <Link to="/Admin/MedicManage" className="nav-link">Medical Professional</Link>
+            </div>
+            <div className="nav-item">
+              <Link to="/Admin/hosp" className="nav-link">Hospital Management</Link>
+            </div>
+          </div>
+
+          <div className="nav-actions">
+            <button className="theme-toggle" onClick={toggleTheme}>
+              {isDarkMode ? <Sun className="theme-icon" /> : <Moon className="theme-icon" />}
+            </button>
+            
+          
+          </div>
+        </nav>
+      </header>
+    );
   }
 }
 

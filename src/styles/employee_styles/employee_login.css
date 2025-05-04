@@ -15,8 +15,8 @@
   }
 .loginform {
     width: 420px;
-    background-color: rgb(8, 8, 8);
-    color: white;
+    background-color: rgb(253, 250, 250);
+    color: rgb(7, 7, 7);
     border-radius: 10px;
     padding: 40px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
@@ -29,29 +29,32 @@
     font-size: 36px;
     text-align: center;
     margin-bottom: 30px;
+    color:black;
   }
   
   .input-box {
     position: relative;
     width: 100%;
     margin-bottom: 20px;
+    color: black;
+ 
   }
   
   .input-box input {
     width: 100%;
     height: 50px;
     background-color: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(9, 9, 9, 0.2);
     border-radius: 25px;
     padding: 0 20px;
     padding-right: 45px;
     font-size: 16px;
-    color: white;
+    color: rgb(11, 11, 11);
     outline: none;
   }
   
   .input-box input::placeholder {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(17, 17, 17, 0.8);
   }
   
   .input-box .icon {
@@ -60,7 +63,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(10, 10, 10, 0.8);
   }
   
   .remember-forgot {
@@ -71,7 +74,7 @@
   }
   .remember-forgot a {
     font-size: 14px;
-    color: white;
+    color: rgb(17, 17, 17);
     text-decoration: none;
     margin-bottom: 10px;
   }
@@ -83,19 +86,19 @@
   .loginform button {
     width: 100%;
     height: 45px;
-    background-color: white;
+    background-color: rgb(15, 15, 15);
     border: none;
     border-radius: 25px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 700;
-    color: black;
+    color: rgb(238, 232, 232);
     transition: 0.3s;
     margin-top: 20px;
     margin-bottom: 10px;
   }
   
   .loginform button:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(80, 78, 78, 0.9);
   }
   

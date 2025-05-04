@@ -30,23 +30,10 @@ class AdmdashWelcome extends React.Component {
       });
   }
 
-  handleSignOut = async () => {
-    try {
-      const response = await fetch('/api/adminLogout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-  
-      if (response.ok) {
-        this.setState({ isLoggedOut: true });
-      } else {
-        console.error('Logout failed:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
+  handleSignOut = () => {
+    localStorage.removeItem('isAdminLoggedIn');
+    this.setState({ isLoggedOut: true });
   };
-  
 
   render() {
     const { val1, val2, val3, isLoggedOut } = this.state;
@@ -75,7 +62,7 @@ class AdmdashWelcome extends React.Component {
             <h1>{val3}</h1>
           </div>
         </div>
-        <div id="dash4" className='dash'>
+        <div id="dash4" className='dash1'>
           <h2>Blood Reserves</h2>
           <Barchart />
         </div>

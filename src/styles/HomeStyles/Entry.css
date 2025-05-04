@@ -85,11 +85,13 @@ body {
 
 .text-part-1, .text-part-2 {
   position: relative;
+  color:#ffffff;
 }
 
 .text-part-1 {
   animation: text-part-1-animation 1s linear;
   animation-delay: 0.38s;
+  color: #ffffff;
 }
 
 
@@ -101,9 +103,10 @@ body {
     top: -20px;
   }
 }
-.text-part-2 {
+.text-part-2{
   animation: text-part-2-animation 0.7s linear;
   animation-delay: 1.3s;
+  color: #ffffff;
 }
 @keyframes text-part-2-animation {
   0%, 100% {
@@ -155,8 +158,8 @@ body {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  margin-top: 6rem;
-  margin-left: 50px;
+  margin-top: 4.5rem;
+  margin-left: 150px;
   background-color: red;
   border: none;
   display: flex;

@@ -1,51 +1,79 @@
-import React from 'react';
-import axios from 'axios';
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart, LinearScale, BarElement, Title, CategoryScale, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Navigate } from 'react-router-dom';
+import React, { Component } from "react";
+import axios from "axios";
+import { motion } from "framer-motion";
+import {
+  Chart,
+  LinearScale,
+  BarElement,
+  Title,
+  CategoryScale,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar, Pie } from "react-chartjs-2";
 import { connect } from "react-redux";
-import '../../styles/employee_styles/employee_dashboard.css';
+import { Navigate } from "react-router-dom";
+import {
+  Users,
+  GitPullRequest,
 
-Chart.register(LinearScale, BarElement, Title, CategoryScale, ArcElement, Tooltip, Legend);
+} from "lucide-react";
+import "../../styles/employee_styles/employee_dashboard.css";
 
-class Dashboard extends React.Component {
-  state = {
-    donorCount: 0,
-    actualDonorCount: 0,
-    recipientCount: 0,
-    actualRecipientCount: 0,
-    recipientCountByBloodType: {
-      labels: [],
-      datasets: [
-        {
-          label: 'Recipient Count by Blood Type',
-          data: [],
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        },
-      ],
-    },
-    donorCountByBloodType: {
-      labels: [],
-      datasets: [
-        {
-          label: 'Donor Count by Blood Type',
-          data: [],
-          backgroundColor: [],
-        },
-      ],
-    },
-    doctorPatientCount: {
-      labels: [],
-      datasets: [
-        {
-          label: 'Patients per Doctor',
-          data: [],
-          backgroundColor: [],
-        },
-      ],
-    },
-    redirectToLogin: false,
-  };
+Chart.register(
+  LinearScale,
+  BarElement,
+  Title,
+  CategoryScale,
+  ArcElement,
+  Tooltip,
+  Legend
+);
+
+class EmployeeDashboard extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      donorCount: 0,
+      actualDonorCount: 0,
+      recipientCount: 0,
+      actualRecipientCount: 0,
+      recipientCountByBloodType: {
+        labels: [],
+        datasets: [
+          {
+            label: "Recipient Count by Blood Type",
+            data: [],
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+          },
+        ],
+      },
+      donorCountByBloodType: {
+        labels: [],
+        datasets: [
+          {
+            label: "Donor Count by Blood Type",
+            data: [],
+            backgroundColor: [],
+          },
+        ],
+      },
+      doctorPatientCount: {
+        labels: [],
+        datasets: [
+          {
+            label: "Patients per Doctor",
+            data: [],
+            backgroundColor: [],
+          },
+        ],
+      },
+      redirectToLogin: false,
+      isDarkMode: false,
+      isMenuOpen: false,
+    };
+  }
 
   componentDidMount() {
     this.fetchDonorCount();
@@ -53,24 +81,37 @@ class Dashboard extends React.Component {
     this.fetchRecipientCountByBloodType();
     this.fetchDonorCountByBloodType();
     this.fetchDoctorPatientCount();
+
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    this.setState({ isDarkMode: prefersDark });
+    document.body.setAttribute("data-theme", prefersDark ? "dark" : "light");
   }
+
+  toggleTheme = () => {
+    this.setState((prevState) => {
+      const newTheme = !prevState.isDarkMode;
+      document.body.setAttribute("data-theme", newTheme ? "dark" : "light");
+      return { isDarkMode: newTheme };
+    });
+  };
+
+  toggleMenu = () => {
+    this.setState((prevState) => ({ isMenuOpen: !prevState.isMenuOpen }));
+  };
 
   fetchDoctorPatientCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/doctor-patient-count');
+      const response = await axios.get("http://localhost:5000/api/doctor-patient-count");
       const data = response.data;
-
       const doctors = data.map((item) => item._id);
       const patientCounts = data.map((item) => item.count);
-
-      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']; 
-
+      const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
       this.setState({
         doctorPatientCount: {
           labels: doctors,
           datasets: [
             {
-              label: 'Patients per Doctor',
+              label: "Patients per Doctor",
               data: patientCounts,
               backgroundColor: colors.slice(0, doctors.length),
             },
@@ -78,26 +119,32 @@ class Dashboard extends React.Component {
         },
       });
     } catch (error) {
-      console.error('Error fetching doctor patient count:', error);
+      console.error("Error fetching doctor patient count:", error);
     }
   };
 
   fetchDonorCountByBloodType = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor-count-by-blood-type');
+      const response = await axios.get("http://localhost:5000/api/donor-count-by-blood-type");
       const data = response.data;
-
       const bloodGroups = data.map((item) => item._id);
       const counts = data.map((item) => item.count);
-
-      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#F7464A', '#46BFBD'];
-
+      const colors = [
+        "#FF6384",
+        "#36A2EB",
+        "#FFCE56",
+        "#4BC0C0",
+        "#9966FF",
+        "#FF9F40",
+        "#F7464A",
+        "#46BFBD",
+      ];
       this.setState({
         donorCountByBloodType: {
           labels: bloodGroups,
           datasets: [
             {
-              label: 'Donor Count by Blood Type',
+              label: "Donor Count by Blood Type",
               data: counts,
               backgroundColor: colors.slice(0, bloodGroups.length),
             },
@@ -105,16 +152,16 @@ class Dashboard extends React.Component {
         },
       });
     } catch (error) {
-      console.error('Error fetching donor count by blood type:', error);
+      console.error("Error fetching donor count by blood type:", error);
     }
   };
 
   fetchDonorCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor-count');
+      const response = await axios.get("http://localhost:5000/api/donor-count");
       this.setState({ actualDonorCount: response.data.donorCount }, this.incrementDonorCount);
     } catch (error) {
-      console.error('Error fetching donor count:', error);
+      console.error("Error fetching donor count:", error);
     }
   };
 
@@ -134,10 +181,10 @@ class Dashboard extends React.Component {
 
   fetchRecipientCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/recipient-count');
+      const response = await axios.get("http://localhost:5000/api/recipient-count");
       this.setState({ actualRecipientCount: response.data.recipientCount }, this.incrementRecipientCount);
     } catch (error) {
-      console.error('Error fetching recipient count:', error);
+      console.error("Error fetching recipient count:", error);
     }
   };
 
@@ -157,150 +204,106 @@ class Dashboard extends React.Component {
 
   fetchRecipientCountByBloodType = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/recipient-count-by-blood-type');
+      const response = await axios.get("http://localhost:5000/api/recipient-count-by-blood-type");
       const data = response.data;
-
       const bloodTypes = data.map((item) => item._id);
       const counts = data.map((item) => item.count);
-
       this.setState({
         recipientCountByBloodType: {
           labels: bloodTypes,
           datasets: [
             {
-              label: 'Recipient Count by Blood Type',
+              label: "Recipient Count by Blood Type",
               data: counts,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              backgroundColor: "rgba(75, 192, 192, 0.6)",
             },
           ],
         },
       });
     } catch (error) {
-      console.error('Error fetching recipient count by blood type:', error);
+      console.error("Error fetching recipient count by blood type:", error);
     }
   };
 
   handleLogout = () => {
-    localStorage.removeItem('username');
+    localStorage.removeItem("username");
     this.setState({ redirectToLogin: true });
   };
 
   render() {
-    const {donorCount, recipientCount, recipientCountByBloodType, donorCountByBloodType, doctorPatientCount, redirectToLogin } = this.state;
+    const {
+      donorCount,
+      recipientCount,
+      recipientCountByBloodType,
+      donorCountByBloodType,
+      doctorPatientCount,
+      redirectToLogin,
+      isDarkMode,
+    } = this.state;
 
     if (redirectToLogin) {
-      return <Navigate to="/employeeLogin" />;
+      return <Navigate to="/employee/login" />;
     }
 
-    const { username } = this.props;
-
     return (
-      <div className="dashboard-container">
-        <h1 id="greeting">Welcome, {username}!</h1>
+      <div className="employee-dashboard">
+        <motion.div
+          className="dashboard-content"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="stats-grid">
+            <motion.div className="stat-card" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+              <Users className="stat-icon" />
+              <h3>Total Donors</h3>
+              <p className="stat-number">{donorCount}</p>
+            </motion.div>
 
-        <div className="stat-boxes">
-          <div className="stat-box">
-            <h3>Total Donors</h3>
-            <p>{donorCount}</p>
-          </div>
-          <div className="stat-box">
-            <h3>Blood Requests</h3>
-            <p>{recipientCount}</p>
-          </div>
-        </div>
-
-        <div className="chart-container">
-          <Bar
-            data={recipientCountByBloodType}
-            options={{
-              responsive: true,
-              plugins: {
-                title: {
-                  display: true,
-                  text: 'Pending Blood Requests',
-                  font: {
-                    size: 20,
-                  },
-                  padding: {
-                    top: 10,
-                    bottom: 30,
-                  },
-                },
-                legend: {
-                  display: true,
-                  position: 'top',
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: {
-                    display: false,
-                  },
-                  ticks: {
-                    callback: function (value) {
-                      return Number.isInteger(value) ? value : '';
-                    },
-                  },
-                },
-                x: {
-                  grid: {
-                    display: false,
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-
-        <div className="pie-charts-row">
-          <div className="pie-chart">
-            <h3>Donor Blood Types Distribution</h3>
-            <Pie
-              data={donorCountByBloodType}
-              options={{
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: 'right',
-                  },
-                },
-              }}
-            />
+            <motion.div className="stat-card" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GitPullRequest className="stat-icon" />
+              <h3>Blood Requests</h3>
+              <p className="stat-number">{recipientCount}</p>
+            </motion.div>
           </div>
 
-          <div className="pie-chart">
-            <h3>Patients per Doctor</h3>
-            <Pie
-              data={doctorPatientCount}
-              options={{
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: 'right',
+          <div className="charts-container">
+            <div className="chart-card">
+              <h3>Blood Requests by Type</h3>
+              <Bar
+                data={recipientCountByBloodType}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: { legend: { display: false } },
+                  scales: {
+                    y: { beginAtZero: true, grid: { color: isDarkMode ? "#333" : "#ddd" } },
+                    x: { grid: { display: false } },
                   },
-                },
-              }}
-            />
-          </div>
-        </div>
+                }}
+              />
+            </div>
 
-        <div className="dashboard-footer">
-          <button className="employee-logout-button" onClick={this.handleLogout}>
-            Logout
-          </button>
-        </div>
+            <div className="pie-charts">
+              <div className="chart-card">
+                <h3>Donor Blood Types</h3>
+                <Pie data={donorCountByBloodType} />
+              </div>
+
+              <div className="chart-card">
+                <h3>Patients per Doctor</h3>
+                <Pie data={doctorPatientCount} />
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  username: state.employees.employee.username,
+  username: state.employees?.employee?.username,
 });
 
-export default connect(mapStateToProps)(Dashboard);
+export default connect(mapStateToProps)(EmployeeDashboard);

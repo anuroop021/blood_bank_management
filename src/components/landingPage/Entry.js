@@ -16,7 +16,7 @@ const Entry = () => {
           <h1>
             <span className="text-part-1">Donate</span>
             <span className="circle-unique">Blood</span>
-            <span className="text-part-2">Save</span> Lives
+            <span className="text-part-2">Save Lives</span>
           </h1>
           <hr className="heading-line-unique" />
         </section>
