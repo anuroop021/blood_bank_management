@@ -23,7 +23,7 @@ redisClient.connect()
   .catch(err => console.error('Redis connection error:', err));
 
 
-mongoose.connect("mongodb://127.0.0.1:27017/BloodBankWebsite")
+mongoose.connect("mongodb+srv://koushik2pula:12345abc@cluster0.mchdhsw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => {
     console.log('MongoDB connected successfully');
   })
