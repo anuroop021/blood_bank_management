@@ -640,7 +640,6 @@ app.post('/api/payment', async (req, res) => {
       hospitalID: req.session.hospital ? req.session.hospital.username : null,
       createdAt: new Date()
     });
-
     await newTransaction.save();
 
     res.status(201).json({ 
