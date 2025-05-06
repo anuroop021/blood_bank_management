@@ -506,6 +506,7 @@ app.post('/api/HospitalLogin', async (req, res) => {
   }
 });
 
+
 app.post('/api/hospitalLogout', (req, res) => {
   // Destroy the session for the hospital
   req.session.destroy((err) => {
