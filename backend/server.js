@@ -492,7 +492,7 @@ app.delete('/api/hospitals/remove/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to remove hospital' });
   }
 });
-app.post('/hospital/register', async (req, res) => {
+app.post('/api/hospitals/register', async (req, res) => {
   try {
     const {
       username,

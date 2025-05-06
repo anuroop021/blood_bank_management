@@ -36,7 +36,7 @@ const PaymentPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch(`${api_uri}/api/session-info`);
+        const response = await fetch(`${api_uri}/api/session-info`,{credentials:'include'});
         
         if (!response.ok) {
           console.error('No active session');
