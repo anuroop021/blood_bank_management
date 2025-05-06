@@ -416,6 +416,7 @@ app.get('/api/hospitals', async (req, res) => {
   }
 });
 app.post('/AddHospital', async (req, res) => {
+  const cacheKey = 'hospitalsData';
   try {
     const { username, password, address, contact, email, type, bloodbank_capacity, establishedYear } = req.body;
 
@@ -439,6 +440,8 @@ app.post('/AddHospital', async (req, res) => {
     
 
     await hospital.save();
+    const hospitals = await Hospital.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(hospitals));
     
     res.status(201).json({ message: 'Hospital added successfully' });
     
@@ -448,6 +451,7 @@ app.post('/AddHospital', async (req, res) => {
 });
 app.put('/api/hospitals/update/:id', async (req, res) => {
   const { username, address, contact, email, shift, bloodbank_capacity } = req.body;
+  const cacheKey = 'hospitalsData';
   
   try {
     const hospital = await Hospital.findById(req.params.id);
@@ -465,6 +469,8 @@ app.put('/api/hospitals/update/:id', async (req, res) => {
     if (bloodbank_capacity) hospital.bloodbank_capacity = bloodbank_capacity;
 
     const updatedHospital = await hospital.save();
+    const hospitals = await Hospital.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(hospitals));
 
     res.json(updatedHospital);
   } catch (error) {
@@ -472,13 +478,15 @@ app.put('/api/hospitals/update/:id', async (req, res) => {
   }
 });
 app.delete('/api/hospitals/remove/:id', async (req, res) => {
+  const cacheKey = 'hospitalsData';
   try {
     const deletedHospital = await Hospital.findByIdAndDelete(req.params.id);
 
     if (!deletedHospital) {
       return res.status(404).json({ error: 'Hospital not found' });
     }
-
+    const hospitals = await Hospital.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(hospitals));
     res.json({ message: 'Hospital removed successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to remove hospital' });
@@ -717,6 +725,7 @@ app.get('/api/medics',  async (req, res) => {
 });
 app.put('/api/medics/:id', async (req, res) => {
   const { username, contactNumber, email, address } = req.body;
+  const cacheKey = 'medicsData';
 
   try {
     const medic = await medicalProfessional.findById(req.params.id);
@@ -731,6 +740,8 @@ app.put('/api/medics/:id', async (req, res) => {
     if (address) medic.address = address;
 
     const updatedMedic = await medic.save();
+    const medics = await medicalProfessional.find(); 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(medics));
 
     res.json({ message: 'medic updated successfully!', medic: updatedMedic });
   } catch (error) {
@@ -739,16 +750,20 @@ app.put('/api/medics/:id', async (req, res) => {
   }
 });
 app.delete('/api/medics/:id',  async (req, res) => {
+  const cacheKey = 'medicsData';
   try {
     const medicId = req.params.id;
     await medicalProfessional.findByIdAndDelete(medicId);
     res.status(200).json({ message: 'medic removed successfully!' });
+    const medics = await medicalProfessional.find(); 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(medics));
   } catch (error) {
     console.error('Error removing medic:', error);
     res.status(500).json({ message: 'Failed to remove medic.' });
   }
 });
 app.post('/AddMedic', async (req, res) => {
+  const cacheKey = 'medicsData';
   try {
   
     const newMedic = new medicalProfessional({
@@ -761,6 +776,8 @@ app.post('/AddMedic', async (req, res) => {
 
     await newMedic.save();
     res.status(201).json({ message: 'Medic added successfully!' });
+    const medics = await medicalProfessional.find(); 
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(medics));
   } catch (error) {
     console.error('Error saving medic:', error);
     res.status(500).json({ message: 'Failed to add medic.' });

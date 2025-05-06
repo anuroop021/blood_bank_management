@@ -10,7 +10,6 @@ const redisClient = redis.createClient({
     rejectUnauthorized: false, 
   },
 });
-
 redisClient.connect()
 
 
@@ -101,10 +100,6 @@ exports.loginDonor = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
-
-
-
 exports.logoutDonor = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -154,6 +149,7 @@ exports.getDonorProfile = async (req, res) => {
 
 exports.updateDonorProfile = async (req, res) => {
   const { fname, lname, email, phone, bloodGroup, address } = req.body;
+  const cacheKey = `donorProfile_${req.session.donor._id}`; 
 
   try {
     const updatedDonor = await DonorModel.findByIdAndUpdate(
@@ -161,6 +157,8 @@ exports.updateDonorProfile = async (req, res) => {
       { fname, lname, email, phone, bloodGroup, address },
       { new: true }
     );
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(donor));
+    console.log("Donor profile cached in Redis");
 
     if (!updatedDonor) {
       return res.status(404).json({ message: "Donor not found." });
@@ -279,14 +277,6 @@ exports.getDonationHistory = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const cacheKey = `donationHistory_${donorSession.username}`;
-    const cachedData = await redisClient.get(cacheKey);
-
-    if (cachedData) {
-      console.log("Served donation history from Redis cache");
-      return res.status(200).json(JSON.parse(cachedData));
-    }
-
     const schedules = await ScheduleModel.find({
       name: req.session.donor.username,
       is_verified_by_mp: 1
@@ -295,9 +285,6 @@ exports.getDonationHistory = async (req, res) => {
     if (!schedules.length) {
       return res.status(200).json([]); 
     }
-
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(schedules)); 
-    console.log("Fetched donation history from MongoDB (not cached)");
 
     res.status(200).json(schedules);
   } catch (error) {
