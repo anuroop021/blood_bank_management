@@ -157,7 +157,7 @@ exports.updateDonorProfile = async (req, res) => {
       { fname, lname, email, phone, bloodGroup, address },
       { new: true }
     );
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(donor));
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(updatedDonor));
     console.log("Donor profile cached in Redis");
 
     if (!updatedDonor) {

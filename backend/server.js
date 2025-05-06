@@ -775,9 +775,9 @@ app.post('/AddMedic', async (req, res) => {
     });
 
     await newMedic.save();
-    res.status(201).json({ message: 'Medic added successfully!' });
     const medics = await medicalProfessional.find(); 
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(medics));
+    res.status(201).json({ message: 'Medic added successfully!' });
   } catch (error) {
     console.error('Error saving medic:', error);
     res.status(500).json({ message: 'Failed to add medic.' });
