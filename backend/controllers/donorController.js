@@ -14,8 +14,6 @@ const redisClient = redis.createClient({
 redisClient.connect()
 
 
-
-// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/'); 
@@ -71,7 +69,6 @@ exports.loginDonor = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Debug incoming request
     console.log("Login attempt for username:", username);
     
     const donor = await DonorModel.findOne({ username });
@@ -80,10 +77,8 @@ exports.loginDonor = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Set minimal data in session
     req.session.donor = { _id: donor._id, username: donor.username };
-    
-    // Debug session before save
+ 
     console.log("Session object before save:", req.session);
     console.log("Session ID:", req.session.id);
     
@@ -93,13 +88,11 @@ exports.loginDonor = async (req, res) => {
         return res.status(500).json({ message: 'Error during session initialization.' });
       }
 
-      // Debug session after save and cookie headers
       console.log("Session after save:", req.session);
       console.log("Set-Cookie header:", res.getHeaders()['set-cookie']);
       
       res.status(200).json({ 
         message: 'Login successful',
-        // Include session ID for debugging (safe to expose)
         debugSessionId: req.session.id
       });
     });
@@ -124,13 +117,12 @@ exports.logoutDonor = (req, res) => {
 
 exports.getDonorProfile = async (req, res) => {
   try {
-    // Debug incoming request
+
     console.log("Profile request headers:", req.headers);
     console.log("Profile request cookies:", req.headers.cookie);
     console.log("Session in profile request:", req.session);
     console.log("Session ID in profile request:", req.session.id);
-    
-    // Check if user is authenticated
+
     if (!req.session.donor) {
       console.log("No donor in session - unauthorized");
       return res.status(401).json({ message: "Unauthorized" });
@@ -138,25 +130,21 @@ exports.getDonorProfile = async (req, res) => {
 
     const cacheKey = `donorProfile_${req.session.donor._id}`; 
 
-    // Try to get from cache first
     const cachedProfile = await redisClient.get(cacheKey);
     if (cachedProfile) {
       console.log('Served donor profile from Redis cache');
       return res.status(200).json(JSON.parse(cachedProfile));
     }
 
-    // Get fresh data from database
     const donor = await DonorModel.findById(req.session.donor._id);
     if (!donor) {
       console.log("Donor not found in database:", req.session.donor._id);
       return res.status(404).json({ message: "Donor not found." });
     }
 
-    // Update cache
     await redisClient.setEx(cacheKey, 3600, JSON.stringify(donor));
     console.log("Donor profile cached in Redis");
 
-    // Send response
     res.status(200).json(donor);
   } catch (error) {
     console.error("Error fetching donor profile:", error);

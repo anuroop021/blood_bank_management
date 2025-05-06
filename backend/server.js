@@ -388,7 +388,7 @@ app.post('/AddEmploy', async (req, res) => {
 
 
 
-// Get all hospitals
+// hospitals
 app.get('/api/hospitals', async (req, res) => {
   const cacheKey = 'hospitalsData';
   try {
@@ -483,11 +483,19 @@ app.post('/api/HospitalLogin', async (req, res) => {
     const hospital = await Hospital.findOne({ username });
 
     if (hospital && hospital.password === password) {
-      req.session.hospital = { username: hospital.username, id: hospital._id }; // Set session here
-      res.status(200).json({
-        success: true,
-        message: 'Login successful!',
-        userId: hospital._id,
+      req.session.hospital = { username: hospital.username, id: hospital._id };
+     
+      req.session.save(err => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: 'Error saving session' });
+        }
+        
+        res.status(200).json({
+          success: true,
+          message: 'Login successful!',
+          userId: hospital._id,
+        });
       });
     } else {
       res.status(401).json({ success: false, message: 'Invalid username or password' });
@@ -512,15 +520,24 @@ app.post('/api/hospitalLogout', (req, res) => {
   });
 });
 app.get('/api/checkHospitalAuth', (req, res) => {
+  console.log('Session data:', req.session);
+  
   if (req.session.hospital) {
-    return res.json({ isAuthenticated: true });
+    return res.json({ 
+      isAuthenticated: true,
+      hospital: {
+        username: req.session.hospital.username,
+        id: req.session.hospital.id
+      }
+    });
   } else {
     return res.json({ isAuthenticated: false });
   }
 });
 app.get('/api/session-info', (req, res) => {
   try {
-
+    console.log('Current session:', req.session);  
+    
     if (req.session.donor) {
       return res.json({ 
         userType: 'individual', 
@@ -528,7 +545,6 @@ app.get('/api/session-info', (req, res) => {
       });
     }
     
-    // Check if hospital is in session
     if (req.session.hospital) {
       return res.json({ 
         userType: 'hospital', 
@@ -536,7 +552,6 @@ app.get('/api/session-info', (req, res) => {
       });
     }
     
-    // If no session found
     return res.status(401).json({ message: 'No active session' });
   } catch (error) {
     console.error('Error checking session:', error);
@@ -606,7 +621,7 @@ app.post('/api/HospitalPayment', async (req, res) => {
 });
 app.get('/api/hospital/session', (req, res) => {
   if (req.session.hospital) {
-      res.set('Cache-Control', 'no-store');  // Prevents caching
+      res.set('Cache-Control', 'no-store');  
       res.json(req.session.hospital);
   } else {
       res.status(401).json({ message: 'Session expired. Please log in again.' });
@@ -677,7 +692,7 @@ app.get('/api/medics',  async (req, res) => {
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
       console.log('Served from Redis cache');
-      return res.json(JSON.parse(cachedData)); // Return cached data
+      return res.json(JSON.parse(cachedData)); 
     }
 
     console.log('Fetched from MongoDB (not cached)');

@@ -27,6 +27,7 @@ class HospitalLogin extends React.Component {
   
     try {
       const response = await fetch(`${api_uri}/api/HospitalLogin`, {
+        credentials: 'include',
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,12 +38,13 @@ class HospitalLogin extends React.Component {
       const data = await response.json();
   
       if (data.success) {
-        localStorage.setItem("isHospLoggedIn", "true"); // Set login flag
         this.setState({
           successMessage: "Login successful!",
           errorMessage: "",
           redirectToDashboard: true,
         });
+
+        localStorage.setItem("isHospLoggedIn", "true");
       } else {
         this.setState({
           errorMessage: "Invalid username or password",
