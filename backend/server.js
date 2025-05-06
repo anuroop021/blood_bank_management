@@ -335,9 +335,11 @@ app.get('/api/employees',  async (req, res) => {
   }
 });
 app.delete('/api/employees/:id',  async (req, res) => {
+  const cacheKey = 'employeesData';
   try {
     const employeeId = req.params.id;
     await Employee.findByIdAndDelete(employeeId);
+    await redisClient.del(cacheKey);
     res.status(200).json({ message: 'Employee removed successfully!' });
   } catch (error) {
     console.error('Error removing employee:', error);
@@ -361,6 +363,8 @@ app.put('/api/employees/:id', async (req, res) => {
     if (address) employee.address = address;
 
     const updatedEmployee = await employee.save();
+    const employees = await Employee.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(employees));
 
     res.json({ message: 'Employee updated successfully!', employee: updatedEmployee });
   } catch (error) {
