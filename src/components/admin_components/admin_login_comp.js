@@ -27,6 +27,7 @@ class AdminLogin extends React.Component {
 
     try {
       const response = await fetch(`${api_uri}/api/adminLogin`, {
+        withCredentials : true,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
