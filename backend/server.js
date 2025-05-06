@@ -45,21 +45,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(helmet());
 app.use(morgan('dev'));
 
-// app.use(cors({
-//   origin: 'https://blood-bank-management-backend-ckpt.onrender.com', 
-//   credentials: true
-// }));
-
-const allowedOrigins = ['http://localhost:3000', 'http://another-origin.com'];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+ app.use(cors({
+  origin: 'https://blood-bank-management-42gz.vercel.app/', 
   credentials: true
 }));
 
