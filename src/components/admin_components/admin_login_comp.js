@@ -24,19 +24,19 @@ class AdminLogin extends React.Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     const { username, password } = this.state;
-
+  
     try {
       const response = await fetch(`${api_uri}/api/adminLogin`, {
-        withCredentials : true,
+        credentials: 'include',  // FIXED: Changed from withCredentials to credentials
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
         this.setState({ 
           successMessage: 'Login successful!', 
