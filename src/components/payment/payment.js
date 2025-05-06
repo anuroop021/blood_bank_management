@@ -5,6 +5,7 @@ const api_uri = process.env.REACT_APP_API_URI;
 
 const savePaymentTransaction = (transactionData) => {
   fetch(`${api_uri}/api/payment`, {
+    credentials: true,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

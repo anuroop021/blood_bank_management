@@ -492,7 +492,40 @@ app.delete('/api/hospitals/remove/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to remove hospital' });
   }
 });
+app.post('/hospital/register', async (req, res) => {
+  try {
+    const {
+      username,
+      password,
+      address,
+      contact,
+      email,
+      type,
+      bloodbank_capacity,
+      establishedYear,
+    } = req.body;
 
+    const newHospital = new Hospital({
+      username,
+      password: password || '1234',
+      address,
+      contact,
+      email,
+      type,
+      bloodbank_capacity,
+      establishedYear,
+    });
+
+    await newHospital.save();
+    res.status(201).json({ message: 'Hospital registered successfully!' });
+  } catch (error) {
+    console.error('Hospital registration error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email or Username already exists.' });
+    }
+    res.status(500).json({ message: 'Registration failed.' });
+  }
+});
 app.post('/api/HospitalLogin', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -581,11 +614,17 @@ app.get('/api/session-info', (req, res) => {
 //payments
 app.post('/api/payment', async (req, res) => {
   try {
+    // Check if user is authenticated
     if (!req.session.donor && !req.session.hospital) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
 
     const { bloodType, bloodUnits, amount, transactionStatus } = req.body;
+    
+    // Validate required fields
+    if (!bloodType || !bloodUnits || !amount) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
 
     const userType = req.session.donor ? "individual" : "hospital";
     const userIdentifier = req.session.donor ? req.session.donor.username : req.session.hospital.name;
@@ -599,14 +638,21 @@ app.post('/api/payment', async (req, res) => {
       transactionStatus,
       donor: req.session.donor ? req.session.donor.username : null,
       hospitalID: req.session.hospital ? req.session.hospital.username : null,
+      createdAt: new Date()
     });
 
     await newTransaction.save();
 
-    res.status(201).json({ message: 'Payment transaction saved successfully', transaction: newTransaction });
+    res.status(201).json({ 
+      message: 'Payment transaction saved successfully', 
+      transaction: newTransaction 
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error saving payment transaction', error });
+    console.error('Payment transaction error:', error);
+    res.status(500).json({ 
+      message: 'Error saving payment transaction', 
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 
+    });
   }
 });
 app.post('/api/HospitalPayment', async (req, res) => {
@@ -765,7 +811,7 @@ app.delete('/api/medics/:id',  async (req, res) => {
 app.post('/AddMedic', async (req, res) => {
   const cacheKey = 'medicsData';
   try {
-  
+    const cacheKey = 'medicsData';
     const newMedic = new medicalProfessional({
       username: req.body.username,
       contactNumber: req.body.contactNumber,
