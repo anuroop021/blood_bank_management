@@ -46,11 +46,11 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 // app.use(cors({
-//   origin: 'http://localhost:3000', 
+//   origin: 'https://blood-bank-management-backend-ckpt.onrender.com', 
 //   credentials: true
 // }));
 
-const allowedOrigins = ['http://localhost:3000', 'https://blood-bank-management-42gz.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'http://another-origin.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -63,6 +63,7 @@ app.use(cors({
   credentials: true
 }));
 
+
 //built in middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -74,8 +75,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: { 
     httpOnly: true, 
-    secure: false, 
-    sameSite: 'strict', 
+    secure: true, 
+    sameSite: 'none', 
   }
 }));
 
