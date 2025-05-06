@@ -37,6 +37,7 @@ mongoose.connect("mongodb+srv://koushik2pula:12345abc@cluster0.mchdhsw.mongodb.n
   });
 
 const app = express();
+app.set('trust proxy', 1);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
