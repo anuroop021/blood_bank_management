@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import '../../styles/donorStyles/ManageMyProfile.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class ManageMyProfile extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class ManageMyProfile extends Component {
 
   async componentDidMount() {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor/profile', {
+      const response = await axios.get(`${api_uri}/api/donor/profile`, {
         withCredentials: true,
       });
 
@@ -47,7 +48,7 @@ class ManageMyProfile extends Component {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/donor/profile/update',
+        `${api_uri}/api/donor/profile/update`,
         { fname, lname, email, phone, bloodGroup, address },
         { withCredentials: true } // Include credentials to send cookies
       );

@@ -3,6 +3,7 @@ import { FaUser } from "react-icons/fa";
 import axios from "axios";
 import '../../styles/employee_styles/employee_login.css';
 import { Navigate } from "react-router-dom";
+const api_uri = process.env.REACT_APP_API_URI;
 
 class MedicalprofessionalLogin extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class MedicalprofessionalLogin extends React.Component {
     const { username, password } = this.state;
 
     try {
-      const response = await axios.post('http://localhost:5000/api/medicalprofessional/login', {
+      const response = await axios.post(`${api_uri}/api/medicalprofessional/login`, {
         username,
         password,
       });

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/payment/payment.css';
 import { useNavigate , useLocation} from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const savePaymentTransaction = (transactionData) => {
-  fetch('/api/payment', {
+  fetch(`${api_uri}/api/payment`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ const PaymentPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch('/api/session-info');
+        const response = await fetch(`${api_uri}/api/session-info`);
         
         if (!response.ok) {
           console.error('No active session');

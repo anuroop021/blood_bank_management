@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdminDonDet extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ class AdminDonDet extends React.Component {
 
   fetchDonors = async () => {
     try {
-      const response = await fetch('/api/donorAD');
+      const response = await fetch(`${api_uri}/api/donorAD`);
       if (response.ok) {
         const data = await response.json();
         this.setState({ donors: data });

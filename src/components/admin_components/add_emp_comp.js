@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/AdminStyles/admin.css';
 import { useNavigate } from 'react-router-dom'; 
+const api_uri = process.env.REACT_APP_API_URI;
 
 const Addemp = () => {
   const [username, setUsername] = useState('');
@@ -38,7 +39,7 @@ const Addemp = () => {
 
     const employeeData = { username, contact, shift, email, address };
 
-    const response = await fetch('/AddEmploy', {
+    const response = await fetch(`${api_uri}/AddEmploy`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

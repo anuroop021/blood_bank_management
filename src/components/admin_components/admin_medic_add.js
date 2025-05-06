@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/AdminStyles/admin.css';
 import { useNavigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const AddMed = () => {
   const [username, setUsername] = useState('');
@@ -35,7 +36,7 @@ const AddMed = () => {
     }
     const medicData = { username, contactNumber, role, email };
 
-    const response = await fetch('/AddMedic', {
+    const response = await fetch(`${api_uri}/AddMedic`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

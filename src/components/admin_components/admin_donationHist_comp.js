@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdminDonHist extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class AdminDonHist extends React.Component {
 
   fetchDonations = async () => {
     try {
-      const response = await fetch('/api/adminDonations');
+      const response = await fetch(`${api_uri}/api/adminDonations`);
       if (response.ok) {
         const data = await response.json();
         this.filterDonationsByDate(data);

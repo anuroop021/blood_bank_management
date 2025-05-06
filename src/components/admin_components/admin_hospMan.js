@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
 import { Link } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 
 class AdminHosp extends React.Component {
@@ -17,7 +18,7 @@ class AdminHosp extends React.Component {
 
   fetchHospitals = async () => {
     try {
-      const response = await fetch('/api/hospitals');
+      const response = await fetch(`${api_uri}/api/hospitals`);
       if (response.ok) {
         const data = await response.json();
         this.setState({ Hospitals: data });
@@ -31,7 +32,7 @@ class AdminHosp extends React.Component {
 
   removeHospital = async (id) => {
     try {
-      const response = await fetch(`/api/hospitals/remove/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${api_uri}/api/hospitals/remove/${id}`, { method: 'DELETE' });
       if (response.ok) {
         this.setState({
           Hospitals: this.state.Hospitals.filter((Hospital) => Hospital._id !== id),

@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
 import { Link } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdminMedic extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class AdminMedic extends React.Component {
 
   fetchMedics = async () => {
     try {
-      const response = await fetch('/api/medics');
+      const response = await fetch(`${api_uri}/api/medics`);
       if (response.ok) {
         const data = await response.json();
         this.setState({ medics: data });
@@ -30,7 +31,7 @@ class AdminMedic extends React.Component {
 
   removeMedic = async (id) => {
     try {
-      const response = await fetch(`/api/medics/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${api_uri}/api/medics/${id}`, { method: 'DELETE' });
       if (response.ok) {
         this.setState({
           medics: this.state.medics.filter((medic) => medic._id !== id),

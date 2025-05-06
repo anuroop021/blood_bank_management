@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdminTransDet extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class AdminTransDet extends React.Component {
 
   fetchTransactions = async () => {
     try {
-      const response = await fetch('/api/paymentTransactions');
+      const response = await fetch(`${api_uri}/api/paymentTransactions`);
       if (response.ok) {
         const data = await response.json();
         this.filterTransactionsByDate(data);

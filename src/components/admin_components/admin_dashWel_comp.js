@@ -3,6 +3,7 @@ import '../../styles/AdminStyles/admin.css';
 import Barchart from './barchart_component';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdmdashWelcome extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class AdmdashWelcome extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/api/dondash')
+    axios.get(`${api_uri}/api/dondash`)
       .then(response => {
         const { totalBloodUnits, numberOfDonors, numberOfEmployees } = response.data;
         this.setState({
@@ -32,7 +33,7 @@ class AdmdashWelcome extends React.Component {
 
   handleSignOut = async () => {
     try {
-      const response = await fetch('/api/adminLogout', {
+      const response = await fetch(`${api_uri}/api/adminLogout`, {
         method: 'POST',
         credentials: 'include',
       });

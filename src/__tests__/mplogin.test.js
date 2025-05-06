@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import MedicalprofessionalLogin from '../components/employee_components/mplogin';
+const api_uri = process.env.REACT_APP_API_URI;
 
 // Mock axios
 jest.mock('axios');
@@ -49,7 +50,7 @@ describe('MedicalprofessionalLogin - Form & API', () => {
       expect(screen.getByText('An error occurred, please try again')).toBeInTheDocument();
     });
 
-    expect(axios.post).toHaveBeenCalledWith('http://localhost:5000/api/medicalprofessional/login', {
+    expect(axios.post).toHaveBeenCalledWith(`${api_uri}/api/medicalprofessional/login`, {
       username: 'wronguser',
       password: 'wrongpass',
     });

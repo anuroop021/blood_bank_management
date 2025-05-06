@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import "../../styles/donorStyles/Donor.css";
+const api_uri = process.env.REACT_APP_API_URI;
 
 class Dashboard extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     try {
-      const response = await axios.get("http://localhost:5000/api/donor/profile", {
+      const response = await axios.get(`${api_uri}/api/donor/profile`, {
         withCredentials: true,
       });
 
@@ -42,7 +43,7 @@ class Dashboard extends Component {
 
   handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/donor/logout", {}, {
+      await axios.post(`${api_uri}/api/donor/logout`, {}, {
         withCredentials: true,
       });
       this.setState({ isLoggedIn: false });

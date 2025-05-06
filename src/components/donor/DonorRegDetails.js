@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { useLocation, useNavigate, Link, Navigate } from "react-router-dom";
 import '../../styles/donorStyles/DonorRegistration.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class DonorRegDetails extends Component {
   constructor(props) {
@@ -68,7 +69,7 @@ class DonorRegDetails extends Component {
     formData.append("idDocument", idDocument); // Append the file
   
     try {
-      const response = await axios.post("http://localhost:5000/api/donor/register", formData, {
+      const response = await axios.post(`${api_uri}/api/donor/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" }, // Important!
       });
   

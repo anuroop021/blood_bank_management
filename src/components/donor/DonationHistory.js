@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import '../../styles/donorStyles/DonationHistory.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class DonationHistory extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class DonationHistory extends Component {
 
   fetchDonationHistory = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor/donationHistory', {
+      const response = await axios.get(`${api_uri}/api/donor/donationHistory`, {
         withCredentials: true,
       });
 

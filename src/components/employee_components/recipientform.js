@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/employee_styles/recipient_portal.css';
 import { useNavigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const RecipientPortal = () => {
     const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ const RecipientPortal = () => {
     useEffect(() => {
         const fetchUsername = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/donor/session', { withCredentials: true });
+                const response = await axios.get(`${api_uri}/api/donor/session`, { withCredentials: true });
                 if (response.data.username) {
                     setUsername(response.data.username);
                 } else {
@@ -51,7 +52,7 @@ const RecipientPortal = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/recipientportal', 
+            const response = await axios.post(`${api_uri}/api/recipientportal`, 
                 { username, ...formData }, 
                 { withCredentials: true }
             );

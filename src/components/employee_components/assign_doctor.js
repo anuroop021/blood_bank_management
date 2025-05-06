@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/employee_styles/assign_doctor.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const ScheduleTable = () => {
   const [data, setData] = useState([]);
@@ -12,7 +13,7 @@ const ScheduleTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/assigndoctor');
+        const response = await axios.get(`${api_uri}/api/assigndoctor`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching schedule data:', error);
@@ -21,7 +22,7 @@ const ScheduleTable = () => {
 
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors'); // Adjust route if necessary
+        const response = await axios.get(`${api_uri}/api/doctors`); // Adjust route if necessary
         setDoctorList(response.data.map((doctor) => doctor.username));
       } catch (error) {
         console.error('Error fetching doctor names:', error);
@@ -41,7 +42,7 @@ const ScheduleTable = () => {
 
   const updateDoctor = async (id, doctorValue) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/updateDoctor/${id}`, {
+      const response = await axios.put(`${api_uri}/api/updateDoctor/${id}`, {
         doctor: doctorValue,
       });
       console.log('Doctor updated:', response.data);

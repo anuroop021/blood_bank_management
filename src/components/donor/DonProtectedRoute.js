@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class DonProtectedRoute extends Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class DonProtectedRoute extends Component {
 
   async componentDidMount() {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor/profile', {
+      const response = await axios.get(`${api_uri}/api/donor/profile`, {
         withCredentials: true,
       });
 

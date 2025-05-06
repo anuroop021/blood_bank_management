@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 import '../../styles/donorStyles/DonorLogin.css';
 import axios from 'axios';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class DonorLogin extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class DonorLogin extends Component {
 
   async componentDidMount() {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor/profile', {
+      const response = await axios.get(`${api_uri}/api/donor/profile`, {
         withCredentials: true, 
       });
       if (response.status === 200) {
@@ -37,7 +38,7 @@ class DonorLogin extends Component {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/donor/login',
+        `${api_uri}/api/donor/login`,
         { username, password },
         { withCredentials: true } 
       );

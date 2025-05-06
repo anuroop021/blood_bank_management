@@ -2,6 +2,7 @@ import React from "react";
 import { FaUser } from "react-icons/fa";
 import { Navigate } from "react-router-dom";
 import "../../styles/AdminStyles/admin_login.css";
+const api_uri = process.env.REACT_APP_API_URI;
 
 class HospitalLogin extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class HospitalLogin extends React.Component {
     const { username, password } = this.state;
   
     try {
-      const response = await fetch("/api/HospitalLogin", {
+      const response = await fetch(`${api_uri}/api/HospitalLogin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

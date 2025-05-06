@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/employee_styles/recipient_portal.css';
 import { useNavigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const HospitalPayment = () => {
     const [formData, setFormData] = useState({
@@ -21,7 +22,7 @@ const HospitalPayment = () => {
     useEffect(() => {
         const fetchSession = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/hospital/session', {
+                const response = await axios.get(`${api_uri}/api/hospital/session`, {
                     withCredentials: true,
                     headers: { 'Cache-Control': 'no-cache' }  
                 });
@@ -56,7 +57,7 @@ const HospitalPayment = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/HospitalPayment',
+                `${api_uri}/api/HospitalPayment`,
                 { 
                     bloodType: formData.bloodType,
                     contactNumber: formData.contactNumber,

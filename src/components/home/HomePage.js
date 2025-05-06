@@ -5,6 +5,7 @@ import { Users, Activity, Droplets, Heart } from 'lucide-react';
 import '../../styles/HomeStyles/HomePage.css';
 import '../layouts/Footer.js';
 import '../layouts/Header.js';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class HomePage extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/api/counts')
+    axios.get(`${api_uri}/api/counts`)
       .then((response) => {
         const { donorsRegistered, employeesRegistered, donationsDone, bloodUnitsCollected } = response.data;
         this.setState({

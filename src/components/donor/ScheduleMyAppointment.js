@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import '../../styles/donorStyles/ScheduleMyAppointment.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const ScheduleMyAppointment = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +27,7 @@ const ScheduleMyAppointment = () => {
 
   const validateSession = async () => {
     try {
-      await axios.get('http://localhost:5000/api/donor/profile', {
+      await axios.get(`${api_uri}/api/donor/profile`, {
         withCredentials: true,
       });
     } catch (error) {
@@ -39,7 +40,7 @@ const ScheduleMyAppointment = () => {
   const fetchAvailableSlots = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/donor/available-slots?date=${formData.date}`,
+        `${api_uri}/api/donor/available-slots?date=${formData.date}`,
         { withCredentials: true }
       );
       setAvailableSlots(response.data);
@@ -60,7 +61,7 @@ const ScheduleMyAppointment = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/donor/appointment',
+        `${api_uri}/api/donor/appointment`,
         formData,
         { withCredentials: true }
       );

@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class HospitalRegistration extends React.Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class HospitalRegistration extends React.Component {
     } = this.state;
 
     try {
-      await axios.post('/api/hospitals/register', {
+      await axios.post(`${api_uri}/api/hospitals/register`, {
         username,
         password,
         address,

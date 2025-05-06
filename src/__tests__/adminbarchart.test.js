@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import Barchart from '../components/admin_components/barchart_component';
 import axios from 'axios';
+const api_uri = process.env.REACT_APP_API_URI;
 
 // Mock axios
 jest.mock('axios');
@@ -57,7 +58,7 @@ describe('Barchart Component', () => {
   test('calls API to fetch blood group counts', async () => {
     render(<Barchart />);
     await waitFor(() => {
-      expect(axios.get).toHaveBeenCalledWith('/api/blood-group-counts');
+      expect(axios.get).toHaveBeenCalledWith(`${api_uri}/api/blood-group-counts`);
     });
   });
 });

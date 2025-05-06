@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const HospProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -7,7 +8,7 @@ const HospProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/checkHospitalAuth', {
+        const response = await fetch(`${api_uri}/api/checkHospitalAuth`, {
           method: 'GET',
           credentials: 'include',
           headers: { 'Cache-Control': 'no-cache' },

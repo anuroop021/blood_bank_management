@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../../styles/AdminStyles/admin.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 const AdminHospManUpd = () => {
   const { id } = useParams(); 
@@ -19,7 +20,7 @@ const AdminHospManUpd = () => {
 
   const fetchhospitalData = async (id) => {
     try {
-      const response = await fetch(`/api/hospital/update/${id}`);
+      const response = await fetch(`${api_uri}/api/hospital/update/${id}`);
       if (response.ok) {
         const data = await response.json();
         sethospital({
@@ -48,7 +49,7 @@ const AdminHospManUpd = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`/api/hospitals/update/${id}`, {
+      const response = await fetch(`${api_uri}/api/hospitals/update/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

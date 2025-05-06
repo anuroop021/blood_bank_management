@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import HospitalPayment from './hosp_pay';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class HospitalMain extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class HospitalMain extends React.Component {
 
   handleSignOut = async () => {
     try {
-      const response = await fetch('/api/hospitalLogout', {
+      const response = await fetch(`${api_uri}/api/hospitalLogout`, {
         method: 'POST',
         credentials: 'include', 
       });

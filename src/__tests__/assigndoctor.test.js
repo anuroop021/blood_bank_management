@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import ScheduleTable from '../components/employee_components/assign_doctor'; // adjust as needed
+const api_uri = process.env.REACT_APP_API_URI;
 
 // Mock axios
 jest.mock('axios');
@@ -43,8 +44,8 @@ describe('ScheduleTable Component (API focus)', () => {
     });
 
     // Verify both GET requests made
-    expect(axios.get).toHaveBeenCalledWith('http://localhost:5000/api/assigndoctor');
-    expect(axios.get).toHaveBeenCalledWith('http://localhost:5000/api/doctors');
+    expect(axios.get).toHaveBeenCalledWith(`${api_uri}/api/assigndoctor`);
+    expect(axios.get).toHaveBeenCalledWith(`${api_uri}/api/doctors`);
   });
 
   test('sends PUT request to update doctor when Save is clicked', async () => {
@@ -70,7 +71,7 @@ describe('ScheduleTable Component (API focus)', () => {
 
     await waitFor(() => {
       expect(axios.put).toHaveBeenCalledWith(
-        'http://localhost:5000/api/updateDoctor/1',
+        `${api_uri}/api/updateDoctor/1`,
         { doctor: 'Dr. Jane' }
       );
     });

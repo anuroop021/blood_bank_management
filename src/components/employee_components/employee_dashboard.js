@@ -5,6 +5,7 @@ import { Chart, LinearScale, BarElement, Title, CategoryScale, ArcElement, Toolt
 import { Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 import '../../styles/employee_styles/employee_dashboard.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 Chart.register(LinearScale, BarElement, Title, CategoryScale, ArcElement, Tooltip, Legend);
 
@@ -57,7 +58,7 @@ class Dashboard extends React.Component {
 
   fetchDoctorPatientCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/doctor-patient-count');
+      const response = await axios.get(`${api_uri}/api/doctor-patient-count`);
       const data = response.data;
 
       const doctors = data.map((item) => item._id);
@@ -84,7 +85,7 @@ class Dashboard extends React.Component {
 
   fetchDonorCountByBloodType = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor-count-by-blood-type');
+      const response = await axios.get(`${api_uri}/api/donor-count-by-blood-type`);
       const data = response.data;
 
       const bloodGroups = data.map((item) => item._id);
@@ -111,7 +112,7 @@ class Dashboard extends React.Component {
 
   fetchDonorCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/donor-count');
+      const response = await axios.get(`${api_uri}/api/donor-count`);
       this.setState({ actualDonorCount: response.data.donorCount }, this.incrementDonorCount);
     } catch (error) {
       console.error('Error fetching donor count:', error);
@@ -134,7 +135,7 @@ class Dashboard extends React.Component {
 
   fetchRecipientCount = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/recipient-count');
+      const response = await axios.get(`${api_uri}/api/recipient-count`);
       this.setState({ actualRecipientCount: response.data.recipientCount }, this.incrementRecipientCount);
     } catch (error) {
       console.error('Error fetching recipient count:', error);
@@ -157,7 +158,7 @@ class Dashboard extends React.Component {
 
   fetchRecipientCountByBloodType = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/recipient-count-by-blood-type');
+      const response = await axios.get(`${api_uri}/api/recipient-count-by-blood-type`);
       const data = response.data;
 
       const bloodTypes = data.map((item) => item._id);

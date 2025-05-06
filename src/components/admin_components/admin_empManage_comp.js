@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../styles/AdminStyles/admin.css';
 import { Link } from 'react-router-dom';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AdminEmp extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class AdminEmp extends React.Component {
 
   fetchEmployees = async () => {
     try {
-      const response = await fetch('/api/employees'); 
+      const response = await fetch(`${api_uri}/api/employees`); 
       if (response.ok) {
         const data = await response.json();
         this.setState({ employees: data });
@@ -30,7 +31,7 @@ class AdminEmp extends React.Component {
 
   removeEmployee = async (id) => {
     try {
-      const response = await fetch(`/api/employees/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${api_uri}/api/employees/${id}`, { method: 'DELETE' });
       if (response.ok) {
         this.setState({
           employees: this.state.employees.filter((employee) => employee._id !== id)

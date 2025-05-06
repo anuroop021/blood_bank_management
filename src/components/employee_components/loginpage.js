@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { setEmployee } from "../../redux/employeereducer";
 import '../../styles/employee_styles/employee_login.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 class Login extends React.Component {
   constructor(props) {
@@ -28,7 +29,7 @@ class Login extends React.Component {
     const { username, password } = this.state;
 
     try {
-      const response = await axios.post('http://localhost:5000/api/employee/login', {
+      const response = await axios.post(`${api_uri}/api/employee/login`, {
         username,
         password,
       });

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import '../../styles/employee_styles/assign_donors.css';
 import { Navigate } from "react-router-dom";
+const api_uri = process.env.REACT_APP_API_URI;
 
 class AssignedPatients extends Component {
   state = {
@@ -19,7 +20,7 @@ class AssignedPatients extends Component {
     }
 
     try {
-      const response = await axios.get('http://localhost:5000/api/assigneddonors', {
+      const response = await axios.get(`${api_uri}/api/assigneddonors`, {
         params: { username },
       });
 
@@ -42,7 +43,7 @@ class AssignedPatients extends Component {
     if (!confirm) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/assigneddonors/verify/${id}`);
+      await axios.put(`${api_uri}/api/assigneddonors/verify/${id}`);
 
       // Remove the verified patient from the list
       this.setState((prevState) => ({

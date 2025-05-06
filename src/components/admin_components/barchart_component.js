@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import axios from 'axios'; 
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import '../../styles/AdminStyles/admin.css';
+const api_uri = process.env.REACT_APP_API_URI;
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -21,7 +22,7 @@ class Barchart extends React.Component {
 
   fetchBloodGroupCounts = async () => {
     try {
-      const response = await axios.get('/api/blood-group-counts');
+      const response = await axios.get(`${api_uri}/api/blood-group-counts`);
       const bloodGroupCounts = response.data;
 
       const bloodGroups = ['A+Ve', 'A-Ve', 'B+Ve', 'B-Ve', 'AB+Ve', 'AB-Ve', 'O+Ve', 'O-Ve'];
