@@ -241,7 +241,17 @@ app.post('/api/adminLogin', async (req, res) => {
     const admin = await AdminModel.findOne({ username });
 
     if (admin && admin.password === password) {
-      res.cookie('adminToken', 'yourAdminTokenHere', { httpOnly: true });
+      // Set cookie with cross-domain attributes
+      res.cookie('adminToken', 'yourAdminTokenHere', { 
+        httpOnly: true,
+        secure: true,      // Required for cross-domain
+        sameSite: 'none',  // Required for cross-domain
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
+      
+      // Debug the cookie being set
+      console.log('Setting admin cookie:', res.getHeaders()['set-cookie']);
+      
       res.status(200).json({ success: true, message: 'Login successful!' });
     } else {
       res.status(401).json({ success: false, message: 'Invalid username or password' });
@@ -289,6 +299,10 @@ app.get('/api/donorAD', async (req, res) => {
   }
 });
 app.get('/api/checkAdminAuth', (req, res) => {
+  // Debug incoming request
+  console.log('Admin auth check cookies:', req.cookies);
+  console.log('Admin auth check headers:', req.headers.cookie);
+  
   const adminToken = req.cookies.adminToken;
 
   if (adminToken === 'yourAdminTokenHere') {
