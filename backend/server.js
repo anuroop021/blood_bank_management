@@ -28,7 +28,6 @@ redisClient.connect()
 
 
 
-
 mongoose.connect("mongodb+srv://koushik2pula:12345abc@cluster0.mchdhsw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => {
     console.log('MongoDB connected successfully');
@@ -46,7 +45,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 
  app.use(cors({
-  origin: 'https://blood-bank-management-42gz.vercel.app/', 
+  origin: 'https://blood-bank-management-42gz-osm1mwstv-koushik-pulas-projects.vercel.app', 
   credentials: true
 }));
 
