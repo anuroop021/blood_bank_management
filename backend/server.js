@@ -348,6 +348,7 @@ app.delete('/api/employees/:id',  async (req, res) => {
 });
 app.put('/api/employees/:id', async (req, res) => {
   const { username, contact, shift, email, address } = req.body;
+  const cacheKey = 'employeesData';
 
   try {
     const employee = await Employee.findById(req.params.id);
@@ -364,7 +365,7 @@ app.put('/api/employees/:id', async (req, res) => {
 
     const updatedEmployee = await employee.save();
     const employees = await Employee.find();
-    await redisClient.setEx(cacheKey, 3600, JSON.stringify(employees));
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(employees)); 
 
     res.json({ message: 'Employee updated successfully!', employee: updatedEmployee });
   } catch (error) {
@@ -374,6 +375,7 @@ app.put('/api/employees/:id', async (req, res) => {
 });
 app.post('/AddEmploy', async (req, res) => {
   try {
+    const cacheKey = 'employeesData';
     const newEmployee = new Employee({
       username: req.body.username,
       contact: req.body.contact,
@@ -383,6 +385,8 @@ app.post('/AddEmploy', async (req, res) => {
     });
 
     await newEmployee.save();
+    const employees = await Employee.find();
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(employees));
     res.status(201).json({ message: 'Employee added successfully!' });
   } catch (error) {
     console.error('Error saving employee:', error);
