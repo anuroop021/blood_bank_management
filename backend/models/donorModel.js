@@ -99,8 +99,7 @@ const DonorSchema = new mongoose.Schema({
       },
       message: props => props.reason.message
     }
-  },
-  idDocument: String,
+  }
 });
 
 DonorSchema.index({ email: 1 });
