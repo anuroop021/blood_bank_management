@@ -46,7 +46,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 
  app.use(cors({
-  origin: 'https://blood-bank-management-42gz-72ytjyd0m-koushik-pulas-projects.vercel.app', 
+  origin: 'https://blood-bank-management-42gz-nc065ska7-koushik-pulas-projects.vercel.app', 
   credentials: true
 }));
 
