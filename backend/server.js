@@ -655,11 +655,17 @@ app.post('/api/payment', async (req, res) => {
 });
 app.post('/api/HospitalPayment', async (req, res) => {
   try {
+    console.log('Hospital payment request session:', req.session);
+    
     if (!req.session.hospital) {
       return res.status(401).json({ success: false, message: 'Hospital not authenticated' });
     }
 
     const { bloodType, contactNumber, requiredUnits, urgencyLevel, dateNeeded, additionalInfo } = req.body;
+    
+    if (!bloodType || !contactNumber || !requiredUnits || !urgencyLevel) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
 
     const newHospPayment = new HospPayment({
       transactionID: `TXN${Date.now()}${Math.floor(Math.random() * 1000)}`,
@@ -668,16 +674,24 @@ app.post('/api/HospitalPayment', async (req, res) => {
       contactNumber,
       requiredUnits,
       urgencyLevel,
-      dateNeeded,
-      additionalInfo,
+      dateNeeded: dateNeeded || new Date(), 
+      additionalInfo: additionalInfo || '',
+      createdAt: new Date()
     });
 
     await newHospPayment.save();
 
-    res.status(201).json({ success: true, message: 'Hospital payment request stored successfully', transaction: newHospPayment });
+    res.status(201).json({ 
+      success: true, 
+      message: 'Hospital payment request stored successfully', 
+      transaction: newHospPayment 
+    });
   } catch (error) {
     console.error('Error saving hospital payment request:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    res.status(500).json({ 
+      success: false, 
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 
+    });
   }
 });
 app.get('/api/hospital/session', (req, res) => {
