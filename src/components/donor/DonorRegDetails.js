@@ -42,46 +42,15 @@ class DonorRegDetails extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber } = this.state;
-  
-    if (!fname || !lname || !email || !gender || !age || !phone || !bloodGroup || !address || !idType || !idNumber) {
-      console.log("Some fields are missing!");
-      this.setState({ errorMessage: "Please fill out all fields." });
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("fname", fname);
-    formData.append("lname", lname);
-    formData.append("email", email);
-    formData.append("gender", gender);
-    formData.append("age", age);
-    formData.append("phone", phone);
-    formData.append("bloodGroup", bloodGroup);
-    formData.append("address", address);
-    formData.append("idType", idType);
-    formData.append("idNumber", idNumber);
-  
     try {
-      const response = await axios.post(`${api_uri}/api/donor/register`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }, // Important!
+      const response = await axios.post(`${api_uri}/api/donor/register`, this.state, {
+        headers: {
+          "Content-Type": "application/json"
+        }
       });
-  
-      console.log("Registration successful:", response.data);
-  
-      this.setState({
-        successMessage: "Registration completed successfully!",
-        errorMessage: "",
-        isRegistered: true, 
-      });
+      console.log("Donor registered:", response.data);
     } catch (error) {
-      console.error("Error during registration:", error.response?.data?.message || error.message);
-      this.setState({
-        errorMessage: error.response?.data?.message || "Error during registration.",
-        successMessage: "",
-      });
+      console.error("Error registering donor:", error.response?.data || error.message);
     }
   };
   
