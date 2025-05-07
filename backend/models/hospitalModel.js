@@ -36,8 +36,8 @@ const hospitalSchema = new mongoose.Schema({
   },
 });
 
-hospitalSchema.index({ email: 1 }, { unique: true });
-hospitalSchema.index({ username: 1 }, { unique: true });
+hospitalSchema.index({ email: 1 });
+hospitalSchema.index({ username: 1 });
 
 module.exports = mongoose.model('Hospital', hospitalSchema);
 

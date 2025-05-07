@@ -132,13 +132,11 @@ const ScheduleSchema = new mongoose.Schema({
   bloodGroup: {
     type: String,
     enum: ['AB-Ve', 'AB+Ve', 'A-Ve', 'A+Ve', 'B-Ve', 'B+Ve', 'O-Ve', 'O+Ve'],
-    required: true,
-    unique: true
+    required: true
   },
   date: {
     type: Date,
-    required: true,
-    unique: true
+    required: true
   },
   timeSlot: {
     type: String,
@@ -151,8 +149,7 @@ const ScheduleSchema = new mongoose.Schema({
   },
   is_verified_by_mp: {
     type: Number,
-    default: 0,
-    unique: true
+    default: 0
   },
   doctor: {
     type: String,
