@@ -79,7 +79,8 @@ const DonorSchema = new mongoose.Schema({
   bloodGroup: {
     type: String,
     enum: ['AB-Ve', 'AB+Ve', 'A-Ve', 'A+Ve', 'B-Ve', 'B+Ve', 'O-Ve', 'O+Ve'],
-    required: true
+    required: true,
+    unique: true 
   },
   address: {
     type: String,
@@ -131,11 +132,13 @@ const ScheduleSchema = new mongoose.Schema({
   bloodGroup: {
     type: String,
     enum: ['AB-Ve', 'AB+Ve', 'A-Ve', 'A+Ve', 'B-Ve', 'B+Ve', 'O-Ve', 'O+Ve'],
-    required: true
+    required: true,
+    unique: true
   },
   date: {
     type: Date,
-    required: true
+    required: true,
+    unique: true
   },
   timeSlot: {
     type: String,
@@ -148,7 +151,8 @@ const ScheduleSchema = new mongoose.Schema({
   },
   is_verified_by_mp: {
     type: Number,
-    default: 0
+    default: 0,
+    unique: true
   },
   doctor: {
     type: String,

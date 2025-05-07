@@ -30,6 +30,7 @@ const paymentTransactionSchema = new mongoose.Schema({
   transactionStatus: {
     type: String,
     required: true,
+    unique: true,
     enum: ['pending', 'completed', 'failed'],
     default: 'pending',
   },
