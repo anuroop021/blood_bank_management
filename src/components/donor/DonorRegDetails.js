@@ -49,6 +49,11 @@ class DonorRegDetails extends Component {
         }
       });
       console.log("Donor registered:", response.data);
+      this.setState({
+        successMessage: "Registration completed successfully",
+        errorMessage: "",
+        isRegistered: true,
+      })
     } catch (error) {
       console.error("Error registering donor:", error.response?.data || error.message);
     }
