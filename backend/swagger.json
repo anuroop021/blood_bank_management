@@ -129,14 +129,9 @@
                       "type": "string",
                       "description": "ID document number",
                       "example": "123456789012"
-                    },
-                    "idDocument": {
-                      "type": "string",
-                      "format": "binary",
-                      "description": "ID document file (image/pdf)"
                     }
                   },
-                  "required": ["username", "password", "fname", "lname", "email", "gender", "age", "phone", "bloodGroup", "address", "idType", "idNumber", "idDocument"]
+                  "required": ["username", "password", "fname", "lname", "email", "gender", "age", "phone", "bloodGroup", "address", "idType", "idNumber"]
                 }
               }
             }
