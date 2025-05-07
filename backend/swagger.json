@@ -11,8 +11,8 @@
     },
     "servers": [
       {
-        "url": "http://localhost:5000",
-        "description": "Development server"
+        "url": "https://blood-bank-management-backend-ckpt.onrender.com",
+        "description": "Prodution server"
       }
     ],
     "tags": [
