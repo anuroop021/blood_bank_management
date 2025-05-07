@@ -13,17 +13,6 @@ const redisClient = redis.createClient({
 redisClient.connect()
 
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); 
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
-  }
-});
-
-exports.upload = multer({ storage });
-
 exports.registerDonor = async (req, res) => {
   const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber } = req.body;
   const idDocument = req.file ? req.file.filename : null;

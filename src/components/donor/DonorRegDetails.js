@@ -34,9 +34,7 @@ class DonorRegDetails extends Component {
     console.log(`Field ${e.target.name} updated: ${e.target.value}`);
   };
 
-  handleFileChange = (e) => {
-    this.setState({ idDocument: e.target.files[0] });
-  };
+  
 
   handleIdTypeChange = (e) => {
     this.setState({ idType: e.target.value });
@@ -251,10 +249,7 @@ class DonorRegDetails extends Component {
                 required
               />
             </div>
-            <div className="donor-reg-details-group">
-                <label htmlFor="donor-id-document">Upload ID Document:</label>
-                <input type="file" id="donor-id-document" name="idDocument" onChange={this.handleFileChange} required />
-              </div></>
+            </>
           )}
 
           <input className="donor-reg-details-submit" type="submit" value="Submit" />
