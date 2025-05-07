@@ -22,7 +22,6 @@ class DonorRegDetails extends Component {
       address: "",
       idType: "",
       idNumber: "",
-      idDocument: null,
       errorMessage: "",
       successMessage: "",
       isRegistered: false,
@@ -43,9 +42,9 @@ class DonorRegDetails extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber, idDocument } = this.state;
+    const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber } = this.state;
   
-    if (!fname || !lname || !email || !gender || !age || !phone || !bloodGroup || !address || !idType || !idNumber || !idDocument) {
+    if (!fname || !lname || !email || !gender || !age || !phone || !bloodGroup || !address || !idType || !idNumber) {
       console.log("Some fields are missing!");
       this.setState({ errorMessage: "Please fill out all fields." });
       return;
@@ -64,7 +63,6 @@ class DonorRegDetails extends Component {
     formData.append("address", address);
     formData.append("idType", idType);
     formData.append("idNumber", idNumber);
-    formData.append("idDocument", idDocument); // Append the file
   
     try {
       const response = await axios.post(`${api_uri}/api/donor/register`, formData, {
