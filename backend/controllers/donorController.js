@@ -15,12 +15,7 @@ redisClient.connect()
 
 exports.registerDonor = async (req, res) => {
   const { username, password, fname, lname, email, gender, age, phone, bloodGroup, address, idType, idNumber } = req.body;
-  const idDocument = req.file ? req.file.filename : null;
-
-  if (!idDocument) {
-    return res.status(400).json({ message: "ID document is required." });
-  }
-
+  
   try {
     const existingDonor = await DonorModel.findOne({ username });
     if (existingDonor) {
@@ -41,8 +36,7 @@ exports.registerDonor = async (req, res) => {
       bloodGroup,
       address,
       idType,
-      idNumber,
-      idDocument // Save the filename in DB
+      idNumber
     });
 
     await newDonor.save();
