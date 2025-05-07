@@ -610,7 +610,6 @@ app.get('/api/session-info', (req, res) => {
 });
 
 
-
 //payments
 app.post('/api/payment', async (req, res) => {
   try {
