@@ -3,7 +3,7 @@ const Recipient = require('../../models/recipientportalmodel');
 const recipientbarchartrouter = express.Router();
 const redis = require('redis');
 const redisClient = redis.createClient({
-  url: 'redis://default:AVj8AAIjcDEwM2UwZTQ4NmUwZjQ0NjE5YTNhNzVmODY5Y2IyYjg5MXAxMA@settling-gecko-22780.upstash.io:6379',
+  url: 'redis://default:AWcWAAIjcDFkNjg4MzUwODUwMjE0MGQ3ODJiNTI3YjZmOWZkMDg0MXAxMA@many-mackerel-26390.upstash.io:6379',
   socket: {
     tls: true, 
     rejectUnauthorized: false, 
