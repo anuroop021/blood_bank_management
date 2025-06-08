@@ -46,7 +46,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 
  app.use(cors({
-  origin: 'https://blood-bank-management-42gz-4eeu0dgmg-koushik-pulas-projects.vercel.app', 
+  origin: 'https://rakthadhaara-frontend.onrender.com', 
   credentials: true
 }));
 
